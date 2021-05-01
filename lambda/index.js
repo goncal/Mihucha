@@ -23,11 +23,11 @@ const getLastTransactionDateAndTime = (timeStamp, userTZ) => {
     //const userWeekDay = new Date(timeStamp).toLocaleDateString(LOCALE, { weekday: 'long', timeZone: userTZ });
     //console.log( 'weekday: ', userWeekDay );
     const userTime = new Date(timeStamp).toLocaleTimeString(LOCALE, { timeZone: userTZ, hour: "2-digit", minute: "2-digit" });
-    if (userDate == today) {
+    if (userDate === today) {
         userDate = "hoy";
-    } else if (userDate == yesterday) {
+    } else if (userDate === yesterday) {
         userDate = "ayer";
-    };
+    }
     return [ userDate, userTime ]
 }
 
@@ -41,6 +41,7 @@ const LaunchRequestHandler = {
         const serviceClientFactory = handlerInput.serviceClientFactory;
         const deviceId = handlerInput.requestEnvelope.context.System.device.deviceId;
         const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
+        let speakOutput, textOutput;
 
         // Get the time zone used in the device and store it in session attributes
         let userTimeZone;
@@ -60,6 +61,7 @@ const LaunchRequestHandler = {
 
         if (typeof piggy_bank_state !== 'undefined') {
             const { current_amount, timestamp } = piggy_bank_state;
+            let userDate, userTime;
             [ userDate, userTime ] = getLastTransactionDateAndTime(timestamp, sessionAttributes.userTZ);
             speakOutput = `La hucha contiene ${current_amount} Euros desde <say-as interpret-as="date">${userDate}</say-as> a las <say-as interpret-as="time">${userTime}</say-as>. ` + CFA;
             textOutput = `La hucha contiene ${current_amount} Euros desde ${userDate} a las ${userTime}. ` + CFA + ' Puedes decir "estado", "añade", "saca", "ajusta" o "para".';
@@ -69,7 +71,7 @@ const LaunchRequestHandler = {
             speakOutput = speakOutput + 'Puedes añadir, sacar, o ajustar el contenido de la hucha. También puedes pedir ayuda. ' + CFA + HELP_MESSAGE;
             textOutput = `${CARD_TITLE} te ayuda a controlar el contenido de tu hucha.` + HELP_MESSAGE;
             let now = new Date();
-            now_TS = now.getTime();
+            const now_TS = now.getTime();
             attributes.piggy_bank_state = {
                 'current_amount': 0,
                 'timestamp': now_TS
@@ -95,6 +97,8 @@ const StatusIntentHandler = {
         const attributes = await handlerInput.attributesManager.getPersistentAttributes();
         const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
         let { piggy_bank_state } = attributes;
+        let userDate, userTime;
+        let speakOutput, textOutput;
 
         if (typeof piggy_bank_state !== 'undefined') {
             const { current_amount, timestamp } = piggy_bank_state;
@@ -121,13 +125,14 @@ const AddMoneyIntentHandler = {
     async handle(handlerInput) {
         const attributes = await handlerInput.attributesManager.getPersistentAttributes();
         let { piggy_bank_state } = attributes;
+        let speakOutput, textOutput;
         var AmountToAdd = handlerInput.requestEnvelope.request.intent.slots.AmountOfMoney.value;
         AmountToAdd = Number(AmountToAdd);
 
         if (typeof piggy_bank_state !== 'undefined') {
             const { current_amount } = piggy_bank_state;
             let now = new Date();
-            now_TS = now.getTime();
+            const now_TS = now.getTime();
             piggy_bank_state.current_amount = current_amount + AmountToAdd;
             piggy_bank_state.timestamp = now_TS;
             handlerInput.attributesManager.setPersistentAttributes(attributes);
@@ -153,6 +158,7 @@ const RemoveMoneyIntentHandler = {
     async handle(handlerInput) {
         const attributes = await handlerInput.attributesManager.getPersistentAttributes();
         let { piggy_bank_state } = attributes;
+        let speakOutput, textOutput;
         var AmountToRemove = handlerInput.requestEnvelope.request.intent.slots.AmountOfMoney.value;
         AmountToRemove = Number(AmountToRemove);
 
@@ -160,7 +166,7 @@ const RemoveMoneyIntentHandler = {
         if (typeof piggy_bank_state !== 'undefined') {
             const { current_amount } = piggy_bank_state;
             let now = new Date();
-            now_TS = now.getTime();
+            const now_TS = now.getTime();
             piggy_bank_state.current_amount = current_amount - AmountToRemove;
             if (piggy_bank_state.current_amount < 0) {
                 piggy_bank_state.current_amount = 0;
@@ -190,13 +196,14 @@ const AdjustPiggyBankIntentHandler = {
     async handle(handlerInput) {
         const attributes = await handlerInput.attributesManager.getPersistentAttributes();
         let { piggy_bank_state } = attributes;
+        let speakOutput, textOutput;
         var NewAmount = handlerInput.requestEnvelope.request.intent.slots.AmountOfMoney.value;
         NewAmount = Number(NewAmount);
 
         if (typeof piggy_bank_state !== 'undefined') {
             const { current_amount } = piggy_bank_state;
             let now = new Date();
-            now_TS = now.getTime();
+            const now_TS = now.getTime();
             piggy_bank_state.current_amount = NewAmount;
             piggy_bank_state.timestamp = now_TS;
             handlerInput.attributesManager.setPersistentAttributes(attributes);
@@ -249,7 +256,7 @@ const SessionEndedRequestHandler = {
     },
     handle(handlerInput) {
         // Any cleanup logic goes here.
-        if(null!=handlerInput.requestEnvelope.request.error) {
+        if(null!==handlerInput.requestEnvelope.request.error) {
             console.log(JSON.stringify(handlerInput.requestEnvelope.request.error));
         }
         return handlerInput.responseBuilder.getResponse();
