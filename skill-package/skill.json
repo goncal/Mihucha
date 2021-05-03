@@ -1,0 +1,67 @@
+{
+  "manifest": {
+    "apis": {
+      "custom": {
+        "endpoint": {
+          "uri": "arn:aws:lambda:eu-west-1:493030143943:function:21efbf49-9594-48f9-9e71-a50f446cf1b8:Release_1"
+        },
+        "interfaces": [],
+        "regions": {
+          "NA": {
+            "endpoint": {
+              "uri": "arn:aws:lambda:us-east-1:493030143943:function:21efbf49-9594-48f9-9e71-a50f446cf1b8:Release_1"
+            }
+          },
+          "EU": {
+            "endpoint": {
+              "uri": "arn:aws:lambda:eu-west-1:493030143943:function:21efbf49-9594-48f9-9e71-a50f446cf1b8:Release_1"
+            }
+          },
+          "FE": {
+            "endpoint": {
+              "uri": "arn:aws:lambda:us-west-2:493030143943:function:21efbf49-9594-48f9-9e71-a50f446cf1b8:Release_1"
+            }
+          }
+        }
+      }
+    },
+    "manifestVersion": "1.0",
+    "privacyAndCompliance": {
+      "allowsPurchases": false,
+      "containsAds": false,
+      "isChildDirected": false,
+      "isExportCompliant": true,
+      "locales": {
+        "es-ES": {}
+      },
+      "usesPersonalInfo": false
+    },
+    "publishingInformation": {
+      "category": "BUSINESS_AND_FINANCE",
+      "distributionCountries": [
+        "ES"
+      ],
+      "isAvailableWorldwide": false,
+      "locales": {
+        "es-ES": {
+          "description": "Este skill te ayuda a gestionar tu hucha. Puedes preguntarle cúanto dinero tienes, añadir o sacar dinero de la hucha, o ajustar su contenido si has olvidado añadir alguna transacción. De momento, no mantiene un histórico de las transacciones, aunque me gustaría añadir esta opción en el futuro.",
+          "examplePhrases": [
+            "Alexa, Abre Mi Hucha y añade 15 euros",
+            "¿Cuánto hay en la hucha?",
+            "Saca 5 euros"
+          ],
+          "keywords": [
+            "piggybank",
+            "hucha"
+          ],
+          "largeIconUri": "https://s3.amazonaws.com/CAPS-SSE/echo_developer/e13c/b0612e97cd654bd7ad1601e16bd2a0d7/APP_ICON_LARGE?versionId=XqFH0aJbNcjEykaBdKIMh7X5naBbyHN2&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20210503T171928Z&X-Amz-SignedHeaders=host&X-Amz-Expires=86400&X-Amz-Credential=AKIAWBV6LQ4QPPL3Q3H6%2F20210503%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=f8ea785bd0d5c43ec56d090ee9c4f65102e008adfe926310d14ead94362b44f9",
+          "name": "Mi hucha",
+          "smallIconUri": "https://s3.amazonaws.com/CAPS-SSE/echo_developer/a764/2324a3432d5942ec8579bf3740784a12/APP_ICON?versionId=6bLYNynw1yXoiiHDOae1UlViSY8F6tZ.&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20210503T171928Z&X-Amz-SignedHeaders=host&X-Amz-Expires=86400&X-Amz-Credential=AKIAWBV6LQ4QPPL3Q3H6%2F20210503%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=feb6cd46664bd5f320ce2ee9db6abd7999dac87ed5db180b09f0cafc9f9f6b82",
+          "summary": "Te ayuda a hacer el seguimiento del dinero que tienes en la hucha",
+          "updatesDescription": "Código optimizado, no hay nuevas funcionalidades"
+        }
+      },
+      "testingInstructions": "No tiene ningún requerimiento especial."
+    }
+  }
+}
