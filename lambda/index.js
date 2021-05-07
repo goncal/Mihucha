@@ -18,7 +18,6 @@ const getLastTransactionDateAndTime = (timeStamp, userTZ) => {
     const today = now.toLocaleDateString(locale, { timeZone: userTZ });
     const yesterday = new Date(now.getTime() - oneDay).toLocaleDateString(locale, { timeZone: userTZ });
     let userDate = new Date(timeStamp).toLocaleDateString(locale, { timeZone: userTZ });
-    // BUG: weekday only work on English locales
     const userWeekDay = new Date(timeStamp).toLocaleDateString(locale, { weekday: 'long', timeZone: userTZ });
     console.log( 'weekday: ', userWeekDay );
     const userTime = new Date(timeStamp).toLocaleTimeString(locale, { timeZone: userTZ, hour: "2-digit", minute: "2-digit" });
@@ -35,7 +34,7 @@ const sayDate = (userDate, userWeekDay) => {
     if (userDate === "hoy" || userDate === "ayer") {
         text = userDate + " " + userWeekDay;
     } else {
-        text = `${userWeekDay} <say-as interpret-as="date">${userDate}</say-as>`;
+        text = `${userWeekDay} <say-as interpret-as="date format="dmy">${userDate}</say-as>`;
     }
     return text
 }
