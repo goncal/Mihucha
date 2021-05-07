@@ -10,7 +10,7 @@ const CFA = '¿Qué quieres hacer? '
 const HELP_MESSAGE = 'Puedes decir "estado", "añade", "saca", "ajusta", o "para". ';
 const DEFAULT_LOCALE = 'es-ES';
 var locale;
-let CURRENCY = 'euros';
+var CURRENCY;
 
 const getLastTransactionDateAndTime = (timeStamp, userTZ) => {
     // Return day and hour corresponding to timeStamp in the user's timezone userTZ
@@ -61,6 +61,8 @@ const LaunchRequestHandler = {
             case 'es-MX': CURRENCY = "pesos";
             break;
             case 'es-US': CURRENCY = "dólares";
+            break;
+            default: CURRENCY = "euros"
         }
         // Get the time zone used in the device and store it in session attributes
         let userTimeZone;
