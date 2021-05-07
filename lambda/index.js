@@ -10,6 +10,7 @@ const CFA = '¿Qué quieres hacer? '
 const HELP_MESSAGE = 'Puedes decir "estado", "añade", "saca", "ajusta", o "para". ';
 const DEFAULT_LOCALE = 'es-ES';
 var locale;
+let CURRENCY = 'euros';
 
 const getLastTransactionDateAndTime = (timeStamp, userTZ) => {
     // Return day and hour corresponding to timeStamp in the user's timezone userTZ
@@ -56,6 +57,11 @@ const LaunchRequestHandler = {
         if (locale === undefined) {
             locale = DEFAULT_LOCALE;
         }
+        switch (locale) {
+            case 'es-MX': CURRENCY = "pesos";
+            break;
+            case 'es-US': CURRENCY = "dólares";
+        }
         // Get the time zone used in the device and store it in session attributes
         let userTimeZone;
         try {
@@ -77,11 +83,11 @@ const LaunchRequestHandler = {
             let userDate, userTime, userWeekDay;
             [ userDate, userTime, userWeekDay ] = getLastTransactionDateAndTime(timestamp, sessionAttributes.userTZ);
             const dateText = sayDate(userDate, userWeekDay);
-            speakOutput = `La hucha contiene ${current_amount} Euros desde ${dateText} a las <say-as interpret-as="time">${userTime}</say-as>. ` + CFA;
-            textOutput = `La hucha contiene ${current_amount} Euros desde ${userDate} a las ${userTime}. ` + CFA + ' Puedes decir "estado", "añade", "saca", "ajusta" o "para".';
+            speakOutput = `La hucha contiene ${current_amount} ${CURRENCY} desde ${dateText} a las <say-as interpret-as="time">${userTime}</say-as>. ` + CFA;
+            textOutput = `La hucha contiene ${current_amount} ${CURRENCY} desde ${userDate} a las ${userTime}. ` + CFA + ' Puedes decir "estado", "añade", "saca", "ajusta" o "para".';
         } else {
             speakOutput = `¡Hola! Este skill, "${CARD_TITLE}", te ayuda a controlar y actualizar el contenido de tu hucha. `;
-            speakOutput = speakOutput + 'Para empezar, asumo que la hucha contiene cero euros. ';
+            speakOutput = speakOutput + 'Para empezar, asumo que la hucha contiene cero ' + ${CURRENCY} + '. ';
             speakOutput = speakOutput + 'Puedes añadir, sacar, o ajustar el contenido de la hucha. También puedes pedir ayuda. ' + CFA + HELP_MESSAGE;
             textOutput = `${CARD_TITLE} te ayuda a controlar el contenido de tu hucha.` + HELP_MESSAGE;
             let now = new Date();
@@ -118,8 +124,8 @@ const StatusIntentHandler = {
             const { current_amount, timestamp } = piggy_bank_state;
             [ userDate, userTime, userWeekDay ] = getLastTransactionDateAndTime(timestamp, sessionAttributes.userTZ);
             const dateText = sayDate(userDate, userWeekDay);
-            speakOutput = `La hucha contiene ${current_amount} Euros desde ${dateText} a las <say-as interpret-as="time">${userTime}</say-as>. `;
-            textOutput = `La hucha contiene ${current_amount} Euros desde ${userDate} a las ${userTime}. `;
+            speakOutput = `La hucha contiene ${current_amount} ${CURRENCY} desde ${dateText} a las <say-as interpret-as="time">${userTime}</say-as>. `;
+            textOutput = `La hucha contiene ${current_amount} ${CURRENCY} desde ${userDate} a las ${userTime}. `;
         } else {
             speakOutput = 'La hucha no está inicializada, y esto no debería pasar.';
         }
@@ -152,7 +158,7 @@ const AddMoneyIntentHandler = {
             piggy_bank_state.timestamp = now_TS;
             handlerInput.attributesManager.setPersistentAttributes(attributes);
             await handlerInput.attributesManager.savePersistentAttributes();
-            speakOutput = `Añadiendo ${AmountToAdd} Euros. La hucha contiene ahora ${piggy_bank_state.current_amount} Euros. `;
+            speakOutput = `Añadiendo ${AmountToAdd} ${CURRENCY}. La hucha contiene ahora ${piggy_bank_state.current_amount} ${CURRENCY}. `;
         } else {
             speakOutput = 'La hucha no está inicializada, y esto no debería pasar.';
         }
@@ -177,7 +183,7 @@ const RemoveMoneyIntentHandler = {
         var AmountToRemove = handlerInput.requestEnvelope.request.intent.slots.AmountOfMoney.value;
         AmountToRemove = Number(AmountToRemove);
 
-        speakOutput = `Sacando ${AmountToRemove} Euros. `;
+        speakOutput = `Sacando ${AmountToRemove} ${CURRENCY}. `;
         if (typeof piggy_bank_state !== undefined) {
             const { current_amount } = piggy_bank_state;
             let now = new Date();
@@ -190,7 +196,7 @@ const RemoveMoneyIntentHandler = {
             piggy_bank_state.timestamp = now_TS;
             handlerInput.attributesManager.setPersistentAttributes(attributes);
             await handlerInput.attributesManager.savePersistentAttributes();
-            speakOutput = speakOutput + `La hucha contiene ahora ${piggy_bank_state.current_amount} Euros. `;
+            speakOutput = speakOutput + `La hucha contiene ahora ${piggy_bank_state.current_amount} ${CURRENCY}. `;
         } else {
             speakOutput = 'La hucha no está inicializada, y esto no debería pasar.';
         }
@@ -223,7 +229,7 @@ const AdjustPiggyBankIntentHandler = {
             piggy_bank_state.timestamp = now_TS;
             handlerInput.attributesManager.setPersistentAttributes(attributes);
             await handlerInput.attributesManager.savePersistentAttributes();
-            speakOutput = `La hucha contenía ${current_amount} Euros y ahora contiene ${piggy_bank_state.current_amount} Euros. `;
+            speakOutput = `La hucha contenía ${current_amount} ${CURRENCY} y ahora contiene ${piggy_bank_state.current_amount} ${CURRENCY}. `;
         } else {
             speakOutput = 'La hucha no está inicializada, y esto no debería pasar.';
         }
