@@ -112,13 +112,14 @@ const StatusIntentHandler = {
         const attributes = await handlerInput.attributesManager.getPersistentAttributes();
         const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
         let { piggy_bank_state } = attributes;
-        let userDate, userTime;
+        let userDate, userTime, userWeekDay;
         let speakOutput, textOutput;
 
         if (typeof piggy_bank_state !== undefined) {
             const { current_amount, timestamp } = piggy_bank_state;
-            [ userDate, userTime ] = getLastTransactionDateAndTime(timestamp, sessionAttributes.userTZ);
-            speakOutput = `La hucha contiene ${current_amount} Euros desde <say-as interpret-as="date">${userDate}</say-as> a las <say-as interpret-as="time">${userTime}</say-as>. `;
+            [ userDate, userTime, userWeekDay ] = getLastTransactionDateAndTime(timestamp, sessionAttributes.userTZ);
+            const dateText = sayDate(userDate, userWeekDay);
+            speakOutput = `La hucha contiene ${current_amount} Euros desde ${dateText} a las <say-as interpret-as="time">${userTime}</say-as>. `;
             textOutput = `La hucha contiene ${current_amount} Euros desde ${userDate} a las ${userTime}. `;
         } else {
             speakOutput = 'La hucha no está inicializada, y esto no debería pasar.';
