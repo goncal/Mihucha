@@ -41,8 +41,8 @@ const LaunchRequestHandler = {
         const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
         let speakOutput, textOutput;
 
-        //var location = this.event.request.locale;
-        //console.log("Locale is " + location);
+        //var location = Alexa.getSessionAttributes
+        console.log("Locale is " + Alexa.getSessionAttributes);
         // Get the time zone used in the device and store it in session attributes
         let userTimeZone;
         try {
