@@ -30,6 +30,16 @@ const getLastTransactionDateAndTime = (timeStamp, userTZ) => {
     return [ userDate, userTime, userWeekDay ]
 }
 
+const sayDate = (userDate, userWeekDay) => {
+    let text;
+    if (userDate === "hoy" || userDate === "ayer") {
+        text = userDate + " " + userWeekDay;
+    } else {
+        text = `${userWeekDay} <say-as interpret-as="date">${userDate}</say-as>`;
+    }
+    return text
+}
+
 const LaunchRequestHandler = {
     canHandle(handlerInput) {
         // The next line will log all requests (LaunchRequestHandler.canHandle is always executed)
@@ -67,8 +77,9 @@ const LaunchRequestHandler = {
             const { current_amount, timestamp } = piggy_bank_state;
             let userDate, userTime, userWeekDay;
             [ userDate, userTime, userWeekDay ] = getLastTransactionDateAndTime(timestamp, sessionAttributes.userTZ);
-            speakOutput = `La hucha contiene ${current_amount} Euros desde ${userWeekDay}, <say-as interpret-as="date">${userDate}</say-as> a las <say-as interpret-as="time">${userTime}</say-as>. ` + CFA;
-            textOutput = `La hucha contiene ${current_amount} Euros desde ${userWeekDay}, ${userDate} a las ${userTime}. ` + CFA + ' Puedes decir "estado", "añade", "saca", "ajusta" o "para".';
+            const dateText = sayDate(userDate, userWeekDay);
+            speakOutput = `La hucha contiene ${current_amount} Euros desde ${dateText} a las <say-as interpret-as="time">${userTime}</say-as>. ` + CFA;
+            textOutput = `La hucha contiene ${current_amount} Euros desde ${userDate} a las ${userTime}. ` + CFA + ' Puedes decir "estado", "añade", "saca", "ajusta" o "para".';
         } else {
             speakOutput = `¡Hola! Este skill, "${CARD_TITLE}", te ayuda a controlar y actualizar el contenido de tu hucha. `;
             speakOutput = speakOutput + 'Para empezar, asumo que la hucha contiene cero euros. ';
