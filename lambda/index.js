@@ -8,7 +8,7 @@ const ddbAdapter = require('ask-sdk-dynamodb-persistence-adapter');
 const CARD_TITLE = "Mi hucha";
 const CFA = '¿Qué quieres hacer? '
 const HELP_MESSAGE = 'Puedes decir "estado", "añade", "saca", "ajusta", o "para". ';
-const LOCALE = 'es-ES';
+let LOCALE = 'es-ES';
 
 const getLastTransactionDateAndTime = (timeStamp, userTZ) => {
     // Return day and hour corresponding to timeStamp in the user's timezone userTZ
@@ -29,10 +29,21 @@ const getLastTransactionDateAndTime = (timeStamp, userTZ) => {
     return [ userDate, userTime ]
 }
 
+function getLocale(request) {
+    let DEFAULT_LOCALE = 'es-ES';
+    if (request !== undefined && request.locale !== undefined) {
+        var locale = request.locale;
+    }
+    else {
+        var locale = DEFAULT_LOCALE;
+    }
+    return locale;
+}
+
 const LaunchRequestHandler = {
     canHandle(handlerInput) {
         // The next line will log all requests (LaunchRequestHandler.canHandle is always executed)
-        console.log(JSON.stringify(handlerInput.requestEnvelope.request));
+        //console.log(JSON.stringify(handlerInput.requestEnvelope.request));
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'LaunchRequest';
     },
     async handle(handlerInput) {
@@ -41,6 +52,8 @@ const LaunchRequestHandler = {
         const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
         let speakOutput, textOutput;
 
+        let request = this.event.request;
+        console.log("Locale is"+this.event.request.locale+" "+getLocale(request));
         // Get the time zone used in the device and store it in session attributes
         let userTimeZone;
         try {
