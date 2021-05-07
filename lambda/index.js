@@ -32,7 +32,7 @@ const getLastTransactionDateAndTime = (timeStamp, userTZ) => {
 const LaunchRequestHandler = {
     canHandle(handlerInput) {
         // The next line will log all requests (LaunchRequestHandler.canHandle is always executed)
-        console.log(JSON.stringify(handlerInput.requestEnvelope.request));
+        // console.log(JSON.stringify(handlerInput.requestEnvelope.request));
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'LaunchRequest';
     },
     async handle(handlerInput) {
@@ -42,7 +42,7 @@ const LaunchRequestHandler = {
         let speakOutput, textOutput;
 
         //var location = Alexa.getSessionAttributes
-        console.log("Locale is " + JSON.stringify(handlerInput.requestEnvelope.request.locale));
+        console.log("Locale is " + handlerInput.requestEnvelope.request.locale);
         // Get the time zone used in the device and store it in session attributes
         let userTimeZone;
         try {
