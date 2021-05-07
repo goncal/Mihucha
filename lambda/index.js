@@ -23,13 +23,11 @@ const getLastTransactionDateAndTime = (timeStamp, userTZ) => {
     console.log( 'weekday: ', userWeekDay );
     const userTime = new Date(timeStamp).toLocaleTimeString(locale, { timeZone: userTZ, hour: "2-digit", minute: "2-digit" });
     if (userDate === today) {
-        userDate = "hoy " + userWeekDay;
+        userDate = "hoy";
     } else if (userDate === yesterday) {
-        userDate = "ayer " + userWeekDay;
-    } else {
-        userDate = userWeekDay + userDate;
+        userDate = "ayer";
     }
-    return [ userDate, userTime ]
+    return [ userDate, userTime, userWeekDay ]
 }
 
 const LaunchRequestHandler = {
@@ -65,12 +63,12 @@ const LaunchRequestHandler = {
         const attributes = await handlerInput.attributesManager.getPersistentAttributes();
         let { piggy_bank_state } = attributes;
 
-        if (typeof piggy_bank_state !== 'undefined') {
+        if (typeof piggy_bank_state !== undefined) {
             const { current_amount, timestamp } = piggy_bank_state;
-            let userDate, userTime;
-            [ userDate, userTime ] = getLastTransactionDateAndTime(timestamp, sessionAttributes.userTZ);
-            speakOutput = `La hucha contiene ${current_amount} Euros desde <say-as interpret-as="date">${userDate}</say-as> a las <say-as interpret-as="time">${userTime}</say-as>. ` + CFA;
-            textOutput = `La hucha contiene ${current_amount} Euros desde ${userDate} a las ${userTime}. ` + CFA + ' Puedes decir "estado", "añade", "saca", "ajusta" o "para".';
+            let userDate, userTime, userWeekDay;
+            [ userDate, userTime, userWeekDay ] = getLastTransactionDateAndTime(timestamp, sessionAttributes.userTZ);
+            speakOutput = `La hucha contiene ${current_amount} Euros desde ${userWeekDay}, <say-as interpret-as="date">${userDate}</say-as> a las <say-as interpret-as="time">${userTime}</say-as>. ` + CFA;
+            textOutput = `La hucha contiene ${current_amount} Euros desde ${userWeekDay}, ${userDate} a las ${userTime}. ` + CFA + ' Puedes decir "estado", "añade", "saca", "ajusta" o "para".';
         } else {
             speakOutput = `¡Hola! Este skill, "${CARD_TITLE}", te ayuda a controlar y actualizar el contenido de tu hucha. `;
             speakOutput = speakOutput + 'Para empezar, asumo que la hucha contiene cero euros. ';
@@ -106,7 +104,7 @@ const StatusIntentHandler = {
         let userDate, userTime;
         let speakOutput, textOutput;
 
-        if (typeof piggy_bank_state !== 'undefined') {
+        if (typeof piggy_bank_state !== undefined) {
             const { current_amount, timestamp } = piggy_bank_state;
             [ userDate, userTime ] = getLastTransactionDateAndTime(timestamp, sessionAttributes.userTZ);
             speakOutput = `La hucha contiene ${current_amount} Euros desde <say-as interpret-as="date">${userDate}</say-as> a las <say-as interpret-as="time">${userTime}</say-as>. `;
@@ -135,7 +133,7 @@ const AddMoneyIntentHandler = {
         var AmountToAdd = handlerInput.requestEnvelope.request.intent.slots.AmountOfMoney.value;
         AmountToAdd = Number(AmountToAdd);
 
-        if (typeof piggy_bank_state !== 'undefined') {
+        if (typeof piggy_bank_state !== undefined) {
             const { current_amount } = piggy_bank_state;
             let now = new Date();
             const now_TS = now.getTime();
@@ -169,7 +167,7 @@ const RemoveMoneyIntentHandler = {
         AmountToRemove = Number(AmountToRemove);
 
         speakOutput = `Sacando ${AmountToRemove} Euros. `;
-        if (typeof piggy_bank_state !== 'undefined') {
+        if (typeof piggy_bank_state !== undefined) {
             const { current_amount } = piggy_bank_state;
             let now = new Date();
             const now_TS = now.getTime();
@@ -206,7 +204,7 @@ const AdjustPiggyBankIntentHandler = {
         var NewAmount = handlerInput.requestEnvelope.request.intent.slots.AmountOfMoney.value;
         NewAmount = Number(NewAmount);
 
-        if (typeof piggy_bank_state !== 'undefined') {
+        if (typeof piggy_bank_state !== undefined) {
             const { current_amount } = piggy_bank_state;
             let now = new Date();
             const now_TS = now.getTime();
