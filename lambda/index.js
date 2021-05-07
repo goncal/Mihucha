@@ -50,7 +50,7 @@ const LaunchRequestHandler = {
         let speakOutput, textOutput;
 
         let request = this.event.request;
-        console.log("Locale is" + this.event.request.locale);
+        console.log("Locale is" + request.locale);
         // Get the time zone used in the device and store it in session attributes
         let userTimeZone;
         try {
