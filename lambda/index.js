@@ -34,7 +34,7 @@ const sayDate = (userDate, userWeekDay) => {
     if (userDate === "hoy" || userDate === "ayer") {
         text = userDate + " " + userWeekDay;
     } else {
-        text = `${userWeekDay} <say-as interpret-as="date format="dmy">${userDate}</say-as>`;
+        text = `${userWeekDay} <say-as interpret-as="date" format="dmy">${userDate}</say-as>`;
     }
     return text
 }
