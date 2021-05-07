@@ -1,0 +1,245 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "mi hucha",
+      "intents": [
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        },
+        {
+          "name": "StatusIntent",
+          "slots": [],
+          "samples": [
+            "estado",
+            "status",
+            "cuánto",
+            "cuánto hay",
+            "cuánto queda",
+            "cuánto hay en la hucha",
+            "cuánto queda en la hucha",
+            "cómo está la hucha"
+          ]
+        },
+        {
+          "name": "AddMoneyIntent",
+          "slots": [
+            {
+              "name": "AmountOfMoney",
+              "type": "AMAZON.NUMBER",
+              "samples": [
+                "añade {AmountOfMoney} pesos",
+                "{AmountOfMoney} pesos",
+                "{AmountOfMoney}"
+              ]
+            }
+          ],
+          "samples": [
+            "Mete plata",
+            "Pon plata",
+            "Añade plata",
+            "Mete plata en la hucha",
+            "Pon plata en la hucha",
+            "Añade plata a la hucha",
+            "Añade dinero a la hucha",
+            "Pon dinero en la hucha",
+            "Mete dinero en la hucha",
+            "Suma dinero a la hucha",
+            "Añade dinero",
+            "Pon dinero",
+            "Mete dinero",
+            "Suma dinero",
+            "Añade",
+            "Pon",
+            "Mete",
+            "Suma",
+            "añade {AmountOfMoney} pesos a la hucha",
+            "pon {AmountOfMoney} pesos en la hucha",
+            "mete {AmountOfMoney} pesos en la hucha",
+            "suma {AmountOfMoney} pesos a la hucha",
+            "añade {AmountOfMoney} pesos",
+            "pon {AmountOfMoney} pesos",
+            "mete {AmountOfMoney} pesos",
+            "suma {AmountOfMoney} pesos"
+          ]
+        },
+        {
+          "name": "RemoveMoneyIntent",
+          "slots": [
+            {
+              "name": "AmountOfMoney",
+              "type": "AMAZON.NUMBER",
+              "samples": [
+                "saca {AmountOfMoney} pesos",
+                "{AmountOfMoney} pesos",
+                "{AmountOfMoney}"
+              ]
+            }
+          ],
+          "samples": [
+            "Resta plata",
+            "Saca plata",
+            "Quita plata",
+            "Resta plata de la hucha",
+            "Saca plata de la hucha",
+            "Quita plata de la hucha",
+            "Quita dinero de la hucha",
+            "Saca dinero de la hucha",
+            "Resta dinero de la hucha",
+            "Quita dinero",
+            "Saca dinero",
+            "Resta dinero",
+            "Quita",
+            "Saca",
+            "Resta",
+            "quita {AmountOfMoney} pesos de la hucha",
+            "saca {AmountOfMoney} pesos de la hucha",
+            "resta {AmountOfMoney} pesos de la hucha",
+            "quita {AmountOfMoney} pesos",
+            "saca {AmountOfMoney} pesos",
+            "resta {AmountOfMoney} pesos"
+          ]
+        },
+        {
+          "name": "AdjustPiggyBankIntent",
+          "slots": [
+            {
+              "name": "AmountOfMoney",
+              "type": "AMAZON.NUMBER",
+              "samples": [
+                "Hay {AmountOfMoney} pesos",
+                "{AmountOfMoney} pesos",
+                "{AmountOfMoney}"
+              ]
+            }
+          ],
+          "samples": [
+            "Ajusta la plata de la hucha a {AmountOfMoney} pesos",
+            "Ajusta la plata de la hucha",
+            "Ajusta",
+            "Ajusta la hucha",
+            "Ajusta el dinero de la hucha",
+            "Ajusta a {AmountOfMoney} pesos",
+            "Ajusta la hucha a {AmountOfMoney} pesos",
+            "Ajusta el dinero de la hucha a {AmountOfMoney} pesos"
+          ]
+        },
+        {
+          "name": "AMAZON.NavigateHomeIntent",
+          "samples": []
+        }
+      ],
+      "types": []
+    },
+    "dialog": {
+      "intents": [
+        {
+          "name": "AddMoneyIntent",
+          "confirmationRequired": false,
+          "prompts": {},
+          "slots": [
+            {
+              "name": "AmountOfMoney",
+              "type": "AMAZON.NUMBER",
+              "elicitationRequired": true,
+              "confirmationRequired": false,
+              "prompts": {
+                "elicitation": "Elicit.Slot.AddAmountOfMoney"
+              }
+            }
+          ],
+          "delegationStrategy": "ALWAYS"
+        },
+        {
+          "name": "RemoveMoneyIntent",
+          "confirmationRequired": false,
+          "prompts": {},
+          "slots": [
+            {
+              "name": "AmountOfMoney",
+              "type": "AMAZON.NUMBER",
+              "elicitationRequired": true,
+              "confirmationRequired": false,
+              "prompts": {
+                "elicitation": "Elicit.Slot.RemoveAmountOfMoney"
+              }
+            }
+          ],
+          "delegationStrategy": "ALWAYS"
+        },
+        {
+          "name": "AdjustPiggyBankIntent",
+          "confirmationRequired": false,
+          "prompts": {},
+          "slots": [
+            {
+              "name": "AmountOfMoney",
+              "type": "AMAZON.NUMBER",
+              "elicitationRequired": true,
+              "confirmationRequired": false,
+              "prompts": {
+                "elicitation": "Elicit.Slot.AdjustPiggyBank"
+              },
+              "validations": [
+                {
+                  "type": "isGreaterThanOrEqualTo",
+                  "prompt": "Slot.Validation.AdjustPiggyBank",
+                  "value": "0"
+                }
+              ]
+            }
+          ],
+          "delegationStrategy": "ALWAYS"
+        }
+      ],
+      "delegationStrategy": "ALWAYS"
+    },
+    "prompts": [
+      {
+        "id": "Elicit.Slot.AddAmountOfMoney",
+        "variations": [
+          {
+            "type": "PlainText",
+            "value": "¿Cuántos pesos quieres añadir?"
+          }
+        ]
+      },
+      {
+        "id": "Elicit.Slot.RemoveAmountOfMoney",
+        "variations": [
+          {
+            "type": "PlainText",
+            "value": "¿Cuántos pesos quieres sacar?"
+          }
+        ]
+      },
+      {
+        "id": "Elicit.Slot.AdjustPiggyBank",
+        "variations": [
+          {
+            "type": "PlainText",
+            "value": "¿Cuántos pesos hay en la hucha?"
+          }
+        ]
+      },
+      {
+        "id": "Slot.Validation.AdjustPiggyBank",
+        "variations": [
+          {
+            "type": "PlainText",
+            "value": "La hucha no puede contener valores negativos"
+          }
+        ]
+      }
+    ]
+  },
+  "version": "3"
+}
