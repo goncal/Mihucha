@@ -8,19 +8,20 @@ const ddbAdapter = require('ask-sdk-dynamodb-persistence-adapter');
 const CARD_TITLE = "Mi hucha";
 const CFA = '¿Qué quieres hacer? '
 const HELP_MESSAGE = 'Puedes decir "estado", "añade", "saca", "ajusta", o "para". ';
-let LOCALE = 'es-ES';
+const DEFAULT_LOCALE = 'es-ES';
+var locale;
 
 const getLastTransactionDateAndTime = (timeStamp, userTZ) => {
     // Return day and hour corresponding to timeStamp in the user's timezone userTZ
     const oneDay = 24 * 60 * 60 * 1000;
     const now = new Date();
-    const today = now.toLocaleDateString(LOCALE, { timeZone: userTZ });
-    const yesterday = new Date(now.getTime() - oneDay).toLocaleDateString(LOCALE, { timeZone: userTZ });
-    let userDate = new Date(timeStamp).toLocaleDateString(LOCALE, { timeZone: userTZ });
+    const today = now.toLocaleDateString(locale, { timeZone: userTZ });
+    const yesterday = new Date(now.getTime() - oneDay).toLocaleDateString(locale, { timeZone: userTZ });
+    let userDate = new Date(timeStamp).toLocaleDateString(locale, { timeZone: userTZ });
     // BUG: weekday only work on English locales
-    //const userWeekDay = new Date(timeStamp).toLocaleDateString(LOCALE, { weekday: 'long', timeZone: userTZ });
+    //const userWeekDay = new Date(timeStamp).toLocaleDateString(locale, { weekday: 'long', timeZone: userTZ });
     //console.log( 'weekday: ', userWeekDay );
-    const userTime = new Date(timeStamp).toLocaleTimeString(LOCALE, { timeZone: userTZ, hour: "2-digit", minute: "2-digit" });
+    const userTime = new Date(timeStamp).toLocaleTimeString(locale, { timeZone: userTZ, hour: "2-digit", minute: "2-digit" });
     if (userDate === today) {
         userDate = "hoy";
     } else if (userDate === yesterday) {
@@ -42,7 +43,10 @@ const LaunchRequestHandler = {
         let speakOutput, textOutput;
 
         //var location = Alexa.getSessionAttributes
-        console.log("Locale is " + handlerInput.requestEnvelope.request.locale);
+        locale=handlerInput.requestEnvelope.request.locale;
+        if (locale === undefined) {
+            locale = DEFAULT_LOCALE;
+        }
         // Get the time zone used in the device and store it in session attributes
         let userTimeZone;
         try {
