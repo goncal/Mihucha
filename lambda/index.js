@@ -30,12 +30,9 @@ const getLastTransactionDateAndTime = (timeStamp, userTZ) => {
 }
 
 function getLocale(request) {
-    let DEFAULT_LOCALE = 'es-ES';
+    let locale = 'es-ES';
     if (request !== undefined && request.locale !== undefined) {
-        var locale = request.locale;
-    }
-    else {
-        var locale = DEFAULT_LOCALE;
+        locale = request.locale;
     }
     return locale;
 }
@@ -53,7 +50,7 @@ const LaunchRequestHandler = {
         let speakOutput, textOutput;
 
         let request = this.event.request;
-        console.log("Locale is"+this.event.request.locale+" "+getLocale(request));
+        console.log("Locale is" + this.event.request.locale + " " + getLocale(request));
         // Get the time zone used in the device and store it in session attributes
         let userTimeZone;
         try {
