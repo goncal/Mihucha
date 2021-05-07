@@ -3,12 +3,8 @@
 // session persistence, api calls, and more.
 const AWS = require('aws-sdk')
 const Alexa = require('ask-sdk-core');
-//const { DynamoDbPersistenceAdapter } = require('ask-sdk-dynamodb-persistence-adapter');
 const ddbAdapter = require('ask-sdk-dynamodb-persistence-adapter');
-//const persistenceAdapter = new DynamoDbPersistenceAdapter({
-//    tableName: 'PiggyBankState',
-//    createTable: true
-//});
+//
 const CARD_TITLE = "Mi hucha";
 const CFA = '¿Qué quieres hacer? '
 const HELP_MESSAGE = 'Puedes decir "estado", "añade", "saca", "ajusta", o "para". ';
@@ -319,7 +315,6 @@ exports.handler = Alexa.SkillBuilders.custom()
         SessionEndedRequestHandler,
         IntentReflectorHandler, // make sure IntentReflectorHandler is last so it doesn't override your custom intent handlers
         )
-//    .withPersistenceAdapter(persistenceAdapter)
     .withPersistenceAdapter(
         new ddbAdapter.DynamoDbPersistenceAdapter({
             tableName: process.env.DYNAMODB_PERSISTENCE_TABLE_NAME,
