@@ -25,7 +25,7 @@
         }
       }
     },
-    "manifestVersion": "1.0",
+    "manifestVersion": "1.1",
     "privacyAndCompliance": {
       "allowsPurchases": false,
       "containsAds": false,
@@ -52,7 +52,8 @@
           ],
           "keywords": [
             "piggybank",
-            "hucha"
+            "hucha",
+            "dinero"
           ],
           "largeIconUri": "https://s3.amazonaws.com/CAPS-SSE/echo_developer/e13c/b0612e97cd654bd7ad1601e16bd2a0d7/APP_ICON_LARGE?versionId=XqFH0aJbNcjEykaBdKIMh7X5naBbyHN2&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20210503T171928Z&X-Amz-SignedHeaders=host&X-Amz-Expires=86400&X-Amz-Credential=AKIAWBV6LQ4QPPL3Q3H6%2F20210503%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=f8ea785bd0d5c43ec56d090ee9c4f65102e008adfe926310d14ead94362b44f9",
           "name": "Mi hucha",
