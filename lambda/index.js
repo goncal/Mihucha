@@ -87,7 +87,7 @@ const LaunchRequestHandler = {
             textOutput = `La hucha contiene ${current_amount} ${CURRENCY} desde ${userDate} a las ${userTime}. ` + CFA + ' Puedes decir "estado", "añade", "saca", "ajusta" o "para".';
         } else {
             speakOutput = `¡Hola! Este skill, "${CARD_TITLE}", te ayuda a controlar y actualizar el contenido de tu hucha. `;
-            speakOutput = speakOutput + 'Para empezar, asumo que la hucha contiene cero ' + ${CURRENCY} + '. ';
+            speakOutput = speakOutput + 'Para empezar, asumo que la hucha contiene cero ' + CURRENCY + '. ';
             speakOutput = speakOutput + 'Puedes añadir, sacar, o ajustar el contenido de la hucha. También puedes pedir ayuda. ' + CFA + HELP_MESSAGE;
             textOutput = `${CARD_TITLE} te ayuda a controlar el contenido de tu hucha.` + HELP_MESSAGE;
             let now = new Date();
