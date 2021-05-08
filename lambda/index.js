@@ -80,7 +80,7 @@ const LaunchRequestHandler = {
         const attributes = await handlerInput.attributesManager.getPersistentAttributes();
         let { piggy_bank_state } = attributes;
 
-        if (typeof piggy_bank_state !== undefined) {
+        if (piggy_bank_state !== undefined) {
             const { current_amount, timestamp } = piggy_bank_state;
             let userDate, userTime, userWeekDay;
             [ userDate, userTime, userWeekDay ] = getLastTransactionDateAndTime(timestamp, sessionAttributes.userTZ);
@@ -122,7 +122,7 @@ const StatusIntentHandler = {
         let userDate, userTime, userWeekDay;
         let speakOutput, textOutput;
 
-        if (typeof piggy_bank_state !== undefined) {
+        if (piggy_bank_state !== undefined) {
             const { current_amount, timestamp } = piggy_bank_state;
             [ userDate, userTime, userWeekDay ] = getLastTransactionDateAndTime(timestamp, sessionAttributes.userTZ);
             const dateText = sayDate(userDate, userWeekDay);
@@ -152,7 +152,7 @@ const AddMoneyIntentHandler = {
         var AmountToAdd = handlerInput.requestEnvelope.request.intent.slots.AmountOfMoney.value;
         AmountToAdd = Number(AmountToAdd);
 
-        if (typeof piggy_bank_state !== undefined) {
+        if (piggy_bank_state !== undefined) {
             const { current_amount } = piggy_bank_state;
             let now = new Date();
             const now_TS = now.getTime();
@@ -186,7 +186,7 @@ const RemoveMoneyIntentHandler = {
         AmountToRemove = Number(AmountToRemove);
 
         speakOutput = `Sacando ${AmountToRemove} ${CURRENCY}. `;
-        if (typeof piggy_bank_state !== undefined) {
+        if (piggy_bank_state !== undefined) {
             const { current_amount } = piggy_bank_state;
             let now = new Date();
             const now_TS = now.getTime();
@@ -223,7 +223,7 @@ const AdjustPiggyBankIntentHandler = {
         var NewAmount = handlerInput.requestEnvelope.request.intent.slots.AmountOfMoney.value;
         NewAmount = Number(NewAmount);
 
-        if (typeof piggy_bank_state !== undefined) {
+        if (piggy_bank_state !== undefined) {
             const { current_amount } = piggy_bank_state;
             let now = new Date();
             const now_TS = now.getTime();
