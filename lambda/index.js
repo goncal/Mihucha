@@ -20,7 +20,7 @@ const getLastTransactionDateAndTime = (timeStamp, userTZ) => {
     const yesterday = new Date(now.getTime() - oneDay).toLocaleDateString(locale, { timeZone: userTZ });
     let userDate = new Date(timeStamp).toLocaleDateString(locale, { timeZone: userTZ });
     const userWeekDay = new Date(timeStamp).toLocaleDateString(locale, { weekday: 'long', timeZone: userTZ });
-    console.log( 'weekday: ', userWeekDay );
+    // console.log( 'weekday: ', userWeekDay );
     const userTime = new Date(timeStamp).toLocaleTimeString(locale, { timeZone: userTZ, hour: "2-digit", minute: "2-digit" });
     if (userDate === today) {
         userDate = "hoy";
