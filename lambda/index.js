@@ -133,7 +133,7 @@ const StatusIntentHandler = {
             && Alexa.getIntentName(handlerInput.requestEnvelope) === 'StatusIntent';
     },
     async handle(handlerInput) {
-        const attributes = await handlerInput.attributesManager.getPersistentAttributes();
+        let attributes = await handlerInput.attributesManager.getPersistentAttributes();
         const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
         let { piggy_bank_state } = attributes;
         let userDate, userTime, userWeekDay;
@@ -162,6 +162,8 @@ const StatusIntentHandler = {
             }
             handlerInput.attributesManager.setPersistentAttributes(attributes);
             await handlerInput.attributesManager.savePersistentAttributes();
+            attributes = await handlerInput.attributesManager.getPersistentAttributes();
+            piggy_bank_state = attributes;
         }
         
         const { current_amount, timestamp } = piggy_bank_state;
