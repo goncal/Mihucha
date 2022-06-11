@@ -12,6 +12,19 @@ const DEFAULT_LOCALE = 'es-ES';
 var locale;
 var CURRENCY;
 
+const setCurrencyinDB = (locale) => {
+    let currency;
+    switch (locale) {
+        case 'es-MX': currency = "pesos";
+        break;
+        case 'es-US': currency = "dólares";
+        break;
+        default: currency = "euros"
+    }
+    const attributes = await handlerInput.attributesManager.getPersistentAttributes();
+        let { piggy_bank_state } = attributes;
+}
+
 const getLastTransactionDateAndTime = (timeStamp, userTZ) => {
     // Return day and hour corresponding to timeStamp in the user's timezone userTZ
     const oneDay = 24 * 60 * 60 * 1000;
@@ -81,22 +94,27 @@ const LaunchRequestHandler = {
         let { piggy_bank_state } = attributes;
 
         if (piggy_bank_state !== undefined) {
-            const { current_amount, timestamp } = piggy_bank_state;
+            const { current_amount, timestamp, currency } = piggy_bank_state;
+            if (currency === undefined) {
+                // This handles the legacy case of database entries where currency was not properly initialized
+                currency = CURRENCY;
+            }
             let userDate, userTime, userWeekDay;
             [ userDate, userTime, userWeekDay ] = getLastTransactionDateAndTime(timestamp, sessionAttributes.userTZ);
             const dateText = sayDate(userDate, userWeekDay);
-            speakOutput = `La hucha contiene ${current_amount} ${CURRENCY} desde ${dateText} a las <say-as interpret-as="time">${userTime}</say-as>. ` + CFA;
-            textOutput = `La hucha contiene ${current_amount} ${CURRENCY} desde ${userDate} a las ${userTime}. ` + CFA + ' Puedes decir "estado", "añade", "saca", "ajusta" o "para".';
+            speakOutput = `La hucha contiene ${current_amount} ${currency} desde ${dateText} a las <say-as interpret-as="time">${userTime}</say-as>. ` + CFA;
+            textOutput = `La hucha contiene ${current_amount} ${currency} desde ${userDate} a las ${userTime}. ` + CFA + ' Puedes decir "estado", "añade", "saca", "ajusta" o "para".';
         } else {
             speakOutput = `¡Hola! Este skill, "${CARD_TITLE}", te ayuda a controlar y actualizar el contenido de tu hucha. `;
-            speakOutput = speakOutput + 'Para empezar, asumo que la hucha contiene cero ' + CURRENCY + '. ';
+            speakOutput = speakOutput + 'Para empezar, asumo que la hucha contiene cero ' + currency + '. ';
             speakOutput = speakOutput + 'Puedes añadir, sacar, o ajustar el contenido de la hucha. También puedes pedir ayuda. ' + CFA + HELP_MESSAGE;
             textOutput = `${CARD_TITLE} te ayuda a controlar el contenido de tu hucha.` + HELP_MESSAGE;
             let now = new Date();
             const now_TS = now.getTime();
             attributes.piggy_bank_state = {
                 'current_amount': 0,
-                'timestamp': now_TS
+                'timestamp': now_TS,
+                'currency': currency
             }
             handlerInput.attributesManager.setPersistentAttributes(attributes);
             await handlerInput.attributesManager.savePersistentAttributes();
@@ -123,13 +141,27 @@ const StatusIntentHandler = {
         let speakOutput, textOutput;
 
         if (piggy_bank_state !== undefined) {
-            const { current_amount, timestamp } = piggy_bank_state;
+            const { current_amount, timestamp, currency } = piggy_bank_state;
+            if (currency === undefined) {
+                // This handles the legacy case of database entries where currency was not properly initialized
+                locale=handlerInput.requestEnvelope.request.locale;
+                if (locale === undefined) {
+                    locale = DEFAULT_LOCALE;
+                }
+                switch (locale) {
+                    case 'es-MX': currency = "pesos";
+                    break;
+                    case 'es-US': currency = "dólares";
+                    break;
+                    default: currency = "euros"
+                }
+            }
             [ userDate, userTime, userWeekDay ] = getLastTransactionDateAndTime(timestamp, sessionAttributes.userTZ);
             const dateText = sayDate(userDate, userWeekDay);
-            speakOutput = `La hucha contiene ${current_amount} ${CURRENCY} desde ${dateText} a las <say-as interpret-as="time">${userTime}</say-as>. `;
-            textOutput = `La hucha contiene ${current_amount} ${CURRENCY} desde ${userDate} a las ${userTime}. `;
+            speakOutput = `La hucha contiene ${current_amount} ${currency} desde ${dateText} a las <say-as interpret-as="time">${userTime}</say-as>. `;
+            textOutput = `La hucha contiene ${current_amount} ${currency} desde ${userDate} a las ${userTime}. `;
         } else {
-            speakOutput = `${NOT_INITIALIZED}`;
+            speakOutput = NOT_INITIALIZED;
         }
 
         return handlerInput.responseBuilder
