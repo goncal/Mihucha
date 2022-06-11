@@ -81,19 +81,19 @@ const LaunchRequestHandler = {
         let { piggy_bank_state } = attributes;
 
         if (piggy_bank_state !== undefined) {
-            const { current_amount, timestamp, currency } = piggy_bank_state;
-            if (currency === undefined) {
+            var { current_amount, timestamp, saved_currency } = piggy_bank_state;
+            if (saved_currency === undefined) {
                 // This handles the legacy case of database entries where currency was not properly initialized
-                currency = CURRENCY;
+                saved_currency = CURRENCY;
             }
             let userDate, userTime, userWeekDay;
             [ userDate, userTime, userWeekDay ] = getLastTransactionDateAndTime(timestamp, sessionAttributes.userTZ);
             const dateText = sayDate(userDate, userWeekDay);
-            speakOutput = `La hucha contiene ${current_amount} ${currency} desde ${dateText} a las <say-as interpret-as="time">${userTime}</say-as>. ` + CFA;
-            textOutput = `La hucha contiene ${current_amount} ${currency} desde ${userDate} a las ${userTime}. ` + CFA + ' Puedes decir "estado", "añade", "saca", "ajusta" o "para".';
+            speakOutput = `La hucha contiene ${current_amount} ${saved_currency} desde ${dateText} a las <say-as interpret-as="time">${userTime}</say-as>. ` + CFA;
+            textOutput = `La hucha contiene ${current_amount} ${saved_currency} desde ${userDate} a las ${userTime}. ` + CFA + ' Puedes decir "estado", "añade", "saca", "ajusta" o "para".';
         } else {
             speakOutput = `¡Hola! Este skill, "${CARD_TITLE}", te ayuda a controlar y actualizar el contenido de tu hucha. `;
-            speakOutput = speakOutput + 'Para empezar, asumo que la hucha contiene cero ' + currency + '. ';
+            speakOutput = speakOutput + 'Para empezar, asumo que la hucha contiene cero ' + saved_currency + '. ';
             speakOutput = speakOutput + 'Puedes añadir, sacar, o ajustar el contenido de la hucha. También puedes pedir ayuda. ' + CFA + HELP_MESSAGE;
             textOutput = `${CARD_TITLE} te ayuda a controlar el contenido de tu hucha.` + HELP_MESSAGE;
             let now = new Date();
@@ -101,7 +101,7 @@ const LaunchRequestHandler = {
             attributes.piggy_bank_state = {
                 'current_amount': 0,
                 'timestamp': now_TS,
-                'currency': currency
+                'currency': saved_currency
             }
             handlerInput.attributesManager.setPersistentAttributes(attributes);
             await handlerInput.attributesManager.savePersistentAttributes();
@@ -128,25 +128,25 @@ const StatusIntentHandler = {
         let speakOutput, textOutput;
 
         if (piggy_bank_state !== undefined) {
-            const { current_amount, timestamp, currency } = piggy_bank_state;
-            if (currency === undefined) {
+            var { current_amount, timestamp, saved_currency } = piggy_bank_state;
+            if (saved_currency === undefined) {
                 // This handles the legacy case of database entries where currency was not properly initialized
                 locale=handlerInput.requestEnvelope.request.locale;
                 if (locale === undefined) {
                     locale = DEFAULT_LOCALE;
                 }
                 switch (locale) {
-                    case 'es-MX': currency = "pesos";
+                    case 'es-MX': saved_currency = "pesos";
                     break;
-                    case 'es-US': currency = "dólares";
+                    case 'es-US': saved_currency = "dólares";
                     break;
-                    default: currency = "euros"
+                    default: saved_currency = "euros"
                 }
             }
             [ userDate, userTime, userWeekDay ] = getLastTransactionDateAndTime(timestamp, sessionAttributes.userTZ);
             const dateText = sayDate(userDate, userWeekDay);
-            speakOutput = `La hucha contiene ${current_amount} ${currency} desde ${dateText} a las <say-as interpret-as="time">${userTime}</say-as>. `;
-            textOutput = `La hucha contiene ${current_amount} ${currency} desde ${userDate} a las ${userTime}. `;
+            speakOutput = `La hucha contiene ${current_amount} ${saved_currency} desde ${dateText} a las <say-as interpret-as="time">${userTime}</say-as>. `;
+            textOutput = `La hucha contiene ${current_amount} ${saved_currency} desde ${userDate} a las ${userTime}. `;
         } else {
             speakOutput = NOT_INITIALIZED;
         }
