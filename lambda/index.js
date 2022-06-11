@@ -1,4 +1,3 @@
-// This sample demonstrates handling intents from an Alexa skill using the Alexa Skills Kit SDK (v2).
 // Please visit https://alexa.design/cookbook for additional examples on implementing slots, dialog management,
 // session persistence, api calls, and more.
 const AWS = require('aws-sdk')
@@ -8,6 +7,7 @@ const ddbAdapter = require('ask-sdk-dynamodb-persistence-adapter');
 const CARD_TITLE = "Mi hucha";
 const CFA = '¿Qué quieres hacer? '
 const HELP_MESSAGE = 'Puedes decir "estado", "añade", "saca", "ajusta", o "para". ';
+const NOT_INITIALIZED = 'La hucha no está inicializada. Para iniciar la hucha puedes decir Alexa, abre mi hucha';
 const DEFAULT_LOCALE = 'es-ES';
 var locale;
 var CURRENCY;
@@ -129,7 +129,7 @@ const StatusIntentHandler = {
             speakOutput = `La hucha contiene ${current_amount} ${CURRENCY} desde ${dateText} a las <say-as interpret-as="time">${userTime}</say-as>. `;
             textOutput = `La hucha contiene ${current_amount} ${CURRENCY} desde ${userDate} a las ${userTime}. `;
         } else {
-            speakOutput = 'La hucha no está inicializada, y esto no debería pasar.';
+            speakOutput = `${NOT_INITIALIZED}`;
         }
 
         return handlerInput.responseBuilder
@@ -162,7 +162,7 @@ const AddMoneyIntentHandler = {
             await handlerInput.attributesManager.savePersistentAttributes();
             speakOutput = `Añadiendo ${AmountToAdd} ${CURRENCY}. La hucha contiene ahora ${piggy_bank_state.current_amount} ${CURRENCY}. `;
         } else {
-            speakOutput = 'La hucha no está inicializada, y esto no debería pasar.';
+            speakOutput = `${NOT_INITIALIZED}`;
         }
 
         return handlerInput.responseBuilder
@@ -200,7 +200,7 @@ const RemoveMoneyIntentHandler = {
             await handlerInput.attributesManager.savePersistentAttributes();
             speakOutput = speakOutput + `La hucha contiene ahora ${piggy_bank_state.current_amount} ${CURRENCY}. `;
         } else {
-            speakOutput = 'La hucha no está inicializada, y esto no debería pasar.';
+            speakOutput = `${NOT_INITIALIZED}`;
         }
 
         return handlerInput.responseBuilder
@@ -233,7 +233,7 @@ const AdjustPiggyBankIntentHandler = {
             await handlerInput.attributesManager.savePersistentAttributes();
             speakOutput = `La hucha contenía ${current_amount} ${CURRENCY} y ahora contiene ${piggy_bank_state.current_amount} ${CURRENCY}. `;
         } else {
-            speakOutput = 'La hucha no está inicializada, y esto no debería pasar.';
+            speakOutput = `${NOT_INITIALIZED}`;
         }
 
         return handlerInput.responseBuilder
