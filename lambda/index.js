@@ -92,7 +92,7 @@ const LaunchRequestHandler = {
             await handlerInput.attributesManager.savePersistentAttributes();
 
             speakOutput = `¡Hola! Este skill, "${CARD_TITLE}", te ayuda a controlar y actualizar el contenido de tu hucha. `;
-            speakOutput = speakOutput + 'Para empezar, asumo que la hucha contiene cero ' + saved_currency + '. ';
+            speakOutput = speakOutput + 'Para empezar, asumo que la hucha contiene cero ' + init_currency + '. ';
             speakOutput = speakOutput + 'Puedes añadir, sacar, o ajustar el contenido de la hucha. También puedes pedir ayuda. ' + CFA + HELP_MESSAGE;
             textOutput = `${CARD_TITLE} te ayuda a controlar el contenido de tu hucha.` + HELP_MESSAGE;
         } else {
