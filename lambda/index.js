@@ -10,7 +10,6 @@ const HELP_MESSAGE = 'Puedes decir "estado", "añade", "saca", "ajusta", o "para
 const NOT_INITIALIZED = 'La hucha no está inicializada. Para iniciar la hucha puedes decir Alexa, abre mi hucha';
 const DEFAULT_LOCALE = 'es-ES';
 var locale;
-var CURRENCY;
 
 const getLastTransactionDateAndTime = (timeStamp, userTZ) => {
     // Return day and hour corresponding to timeStamp in the user's timezone userTZ
@@ -50,7 +49,7 @@ const LaunchRequestHandler = {
         const serviceClientFactory = handlerInput.serviceClientFactory;
         const deviceId = handlerInput.requestEnvelope.context.System.device.deviceId;
         const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
-        let speakOutput, textOutput, saved_currency;
+        let speakOutput, textOutput, saved_currency, init_currency;
 
         //var location = Alexa.getSessionAttributes
         locale=handlerInput.requestEnvelope.request.locale;
@@ -58,11 +57,11 @@ const LaunchRequestHandler = {
             locale = DEFAULT_LOCALE;
         }
         switch (locale) {
-            case 'es-MX': CURRENCY = "pesos";
+            case 'es-MX': init_currency = "pesos";
             break;
-            case 'es-US': CURRENCY = "dólares";
+            case 'es-US': init_currency = "dólares";
             break;
-            default: CURRENCY = "euros"
+            default: init_currency = "euros"
         }
         // Get the time zone used in the device and store it in session attributes
         let userTimeZone;
@@ -85,7 +84,17 @@ const LaunchRequestHandler = {
             saved_currency = piggy_bank_state.currency;
             if (saved_currency === undefined) {
                 // This handles the legacy case of database entries where currency was not properly initialized
-                saved_currency = CURRENCY;
+                locale=handlerInput.requestEnvelope.request.locale;
+                if (locale === undefined) {
+                    locale = DEFAULT_LOCALE;
+                }
+                switch (locale) {
+                    case 'es-MX': saved_currency = "pesos";
+                    break;
+                    case 'es-US': saved_currency = "dólares";
+                    break;
+                    default: saved_currency = "euros"
+                }
             }
             let userDate, userTime, userWeekDay;
             [ userDate, userTime, userWeekDay ] = getLastTransactionDateAndTime(timestamp, sessionAttributes.userTZ);
@@ -102,7 +111,7 @@ const LaunchRequestHandler = {
             attributes.piggy_bank_state = {
                 'current_amount': 0,
                 'timestamp': now_TS,
-                'currency': saved_currency
+                'currency': init_currency
             }
             handlerInput.attributesManager.setPersistentAttributes(attributes);
             await handlerInput.attributesManager.savePersistentAttributes();
