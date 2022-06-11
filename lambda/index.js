@@ -95,29 +95,29 @@ const LaunchRequestHandler = {
             speakOutput = speakOutput + 'Para empezar, asumo que la hucha contiene cero ' + saved_currency + '. ';
             speakOutput = speakOutput + 'Puedes añadir, sacar, o ajustar el contenido de la hucha. También puedes pedir ayuda. ' + CFA + HELP_MESSAGE;
             textOutput = `${CARD_TITLE} te ayuda a controlar el contenido de tu hucha.` + HELP_MESSAGE;
-        }
-
-        const { current_amount, timestamp } = piggy_bank_state;
-        saved_currency = piggy_bank_state.currency;
-        if (saved_currency === undefined) {
-            // This handles the legacy case of database entries where currency was not properly initialized
-            locale=handlerInput.requestEnvelope.request.locale;
-            if (locale === undefined) {
-                locale = DEFAULT_LOCALE;
+        } else {
+            const { current_amount, timestamp } = piggy_bank_state;
+            saved_currency = piggy_bank_state.currency;
+            if (saved_currency === undefined) {
+                // This handles the legacy case of database entries where currency was not properly initialized
+                locale=handlerInput.requestEnvelope.request.locale;
+                if (locale === undefined) {
+                    locale = DEFAULT_LOCALE;
+                }
+                switch (locale) {
+                    case 'es-MX': saved_currency = "pesos";
+                    break;
+                    case 'es-US': saved_currency = "dólares";
+                    break;
+                    default: saved_currency = "euros"
+                }
             }
-            switch (locale) {
-                case 'es-MX': saved_currency = "pesos";
-                break;
-                case 'es-US': saved_currency = "dólares";
-                break;
-                default: saved_currency = "euros"
-            }
+            let userDate, userTime, userWeekDay;
+            [ userDate, userTime, userWeekDay ] = getLastTransactionDateAndTime(timestamp, sessionAttributes.userTZ);
+            const dateText = sayDate(userDate, userWeekDay);
+            speakOutput = `La hucha contiene ${current_amount} ${saved_currency} desde ${dateText} a las <say-as interpret-as="time">${userTime}</say-as>. ` + CFA;
+            textOutput = `La hucha contiene ${current_amount} ${saved_currency} desde ${userDate} a las ${userTime}. ` + CFA + ' Puedes decir "estado", "añade", "saca", "ajusta" o "para".';
         }
-        let userDate, userTime, userWeekDay;
-        [ userDate, userTime, userWeekDay ] = getLastTransactionDateAndTime(timestamp, sessionAttributes.userTZ);
-        const dateText = sayDate(userDate, userWeekDay);
-        speakOutput = `La hucha contiene ${current_amount} ${saved_currency} desde ${dateText} a las <say-as interpret-as="time">${userTime}</say-as>. ` + CFA;
-        textOutput = `La hucha contiene ${current_amount} ${saved_currency} desde ${userDate} a las ${userTime}. ` + CFA + ' Puedes decir "estado", "añade", "saca", "ajusta" o "para".';
 
         return handlerInput.responseBuilder
             .speak(speakOutput)
