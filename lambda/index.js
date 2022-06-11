@@ -11,30 +11,6 @@ const NOT_INITIALIZED = 'La hucha no está inicializada. Para iniciar la hucha p
 const DEFAULT_LOCALE = 'es-ES';
 var locale;
 
-        //var location = Alexa.getSessionAttributes
-        locale=handlerInput.requestEnvelope.request.locale;
-        if (locale === undefined) {
-            locale = DEFAULT_LOCALE;
-        }
-        switch (locale) {
-            case 'es-MX': init_currency = "pesos";
-            break;
-            case 'es-US': init_currency = "dólares";
-            break;
-            default: init_currency = "euros"
-        }
-        let now = new Date();
-            const now_TS = now.getTime();
-            attributes.piggy_bank_state = {
-                'current_amount': 0,
-                'timestamp': now_TS,
-                'currency': init_currency
-            }
-            handlerInput.attributesManager.setPersistentAttributes(attributes);
-            await handlerInput.attributesManager.savePersistentAttributes();
-    }
-}
-
 const getLastTransactionDateAndTime = (timeStamp, userTZ) => {
     // Return day and hour corresponding to timeStamp in the user's timezone userTZ
     const oneDay = 24 * 60 * 60 * 1000;
