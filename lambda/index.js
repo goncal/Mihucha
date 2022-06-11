@@ -66,30 +66,9 @@ const LaunchRequestHandler = {
 
         const attributes = await handlerInput.attributesManager.getPersistentAttributes();
         let { piggy_bank_state } = attributes;
-
-        if (piggy_bank_state !== undefined) {
-            const { current_amount, timestamp } = piggy_bank_state;
-            saved_currency = piggy_bank_state.currency;
-            if (saved_currency === undefined) {
-                // This handles the legacy case of database entries where currency was not properly initialized
-                locale=handlerInput.requestEnvelope.request.locale;
-                if (locale === undefined) {
-                    locale = DEFAULT_LOCALE;
-                }
-                switch (locale) {
-                    case 'es-MX': saved_currency = "pesos";
-                    break;
-                    case 'es-US': saved_currency = "dólares";
-                    break;
-                    default: saved_currency = "euros"
-                }
-            }
-            let userDate, userTime, userWeekDay;
-            [ userDate, userTime, userWeekDay ] = getLastTransactionDateAndTime(timestamp, sessionAttributes.userTZ);
-            const dateText = sayDate(userDate, userWeekDay);
-            speakOutput = `La hucha contiene ${current_amount} ${saved_currency} desde ${dateText} a las <say-as interpret-as="time">${userTime}</say-as>. ` + CFA;
-            textOutput = `La hucha contiene ${current_amount} ${saved_currency} desde ${userDate} a las ${userTime}. ` + CFA + ' Puedes decir "estado", "añade", "saca", "ajusta" o "para".';
-        } else {
+        
+        // Check if we need to initialize the piggy bank
+        if (piggy_bank_state === undefined) {
             let init_currency;
             locale=handlerInput.requestEnvelope.request.locale;
             if (locale === undefined) {
@@ -118,6 +97,28 @@ const LaunchRequestHandler = {
             textOutput = `${CARD_TITLE} te ayuda a controlar el contenido de tu hucha.` + HELP_MESSAGE;
         }
 
+        const { current_amount, timestamp } = piggy_bank_state;
+        saved_currency = piggy_bank_state.currency;
+        if (saved_currency === undefined) {
+            // This handles the legacy case of database entries where currency was not properly initialized
+            locale=handlerInput.requestEnvelope.request.locale;
+            if (locale === undefined) {
+                locale = DEFAULT_LOCALE;
+            }
+            switch (locale) {
+                case 'es-MX': saved_currency = "pesos";
+                break;
+                case 'es-US': saved_currency = "dólares";
+                break;
+                default: saved_currency = "euros"
+            }
+        }
+        let userDate, userTime, userWeekDay;
+        [ userDate, userTime, userWeekDay ] = getLastTransactionDateAndTime(timestamp, sessionAttributes.userTZ);
+        const dateText = sayDate(userDate, userWeekDay);
+        speakOutput = `La hucha contiene ${current_amount} ${saved_currency} desde ${dateText} a las <say-as interpret-as="time">${userTime}</say-as>. ` + CFA;
+        textOutput = `La hucha contiene ${current_amount} ${saved_currency} desde ${userDate} a las ${userTime}. ` + CFA + ' Puedes decir "estado", "añade", "saca", "ajusta" o "para".';
+
         return handlerInput.responseBuilder
             .speak(speakOutput)
             .reprompt(CFA + HELP_MESSAGE)
@@ -138,30 +139,51 @@ const StatusIntentHandler = {
         let userDate, userTime, userWeekDay;
         let speakOutput, textOutput, saved_currency;
 
-        if (piggy_bank_state !== undefined) {
-            const { current_amount, timestamp } = piggy_bank_state;
-            saved_currency = piggy_bank_state.currency;
-            if (saved_currency === undefined) {
-                // This handles the legacy case of database entries where currency was not properly initialized
-                locale=handlerInput.requestEnvelope.request.locale;
-                if (locale === undefined) {
-                    locale = DEFAULT_LOCALE;
-                }
-                switch (locale) {
-                    case 'es-MX': saved_currency = "pesos";
-                    break;
-                    case 'es-US': saved_currency = "dólares";
-                    break;
-                    default: saved_currency = "euros"
-                }
+        if (piggy_bank_state === undefined) {
+            // Piggy bank needs to be initialized
+            let init_currency;
+            locale=handlerInput.requestEnvelope.request.locale;
+            if (locale === undefined) {
+                locale = DEFAULT_LOCALE;
             }
-            [ userDate, userTime, userWeekDay ] = getLastTransactionDateAndTime(timestamp, sessionAttributes.userTZ);
-            const dateText = sayDate(userDate, userWeekDay);
-            speakOutput = `La hucha contiene ${current_amount} ${saved_currency} desde ${dateText} a las <say-as interpret-as="time">${userTime}</say-as>. `;
-            textOutput = `La hucha contiene ${current_amount} ${saved_currency} desde ${userDate} a las ${userTime}. `;
-        } else {
-            speakOutput = NOT_INITIALIZED;
+            switch (locale) {
+                case 'es-MX': init_currency = "pesos";
+                break;
+                case 'es-US': init_currency = "dólares";
+                break;
+                default: init_currency = "euros"
+            }
+            let now = new Date();
+            const now_TS = now.getTime();
+            attributes.piggy_bank_state = {
+                'current_amount': 0,
+                'timestamp': now_TS,
+                'currency': init_currency
+            }
+            handlerInput.attributesManager.setPersistentAttributes(attributes);
+            await handlerInput.attributesManager.savePersistentAttributes();
         }
+        
+        const { current_amount, timestamp } = piggy_bank_state;
+        saved_currency = piggy_bank_state.currency;
+        if (saved_currency === undefined) {
+            // This handles the legacy case of database entries where currency was not properly initialized
+            locale=handlerInput.requestEnvelope.request.locale;
+            if (locale === undefined) {
+                locale = DEFAULT_LOCALE;
+            }
+            switch (locale) {
+                case 'es-MX': saved_currency = "pesos";
+                break;
+                case 'es-US': saved_currency = "dólares";
+                break;
+                default: saved_currency = "euros"
+            }
+        }
+        [ userDate, userTime, userWeekDay ] = getLastTransactionDateAndTime(timestamp, sessionAttributes.userTZ);
+        const dateText = sayDate(userDate, userWeekDay);
+        speakOutput = `La hucha contiene ${current_amount} ${saved_currency} desde ${dateText} a las <say-as interpret-as="time">${userTime}</say-as>. `;
+        textOutput = `La hucha contiene ${current_amount} ${saved_currency} desde ${userDate} a las ${userTime}. `;
 
         return handlerInput.responseBuilder
             .speak(speakOutput + CFA)
@@ -183,34 +205,55 @@ const AddMoneyIntentHandler = {
         var AmountToAdd = handlerInput.requestEnvelope.request.intent.slots.AmountOfMoney.value;
         AmountToAdd = Number(AmountToAdd);
 
-        if (piggy_bank_state !== undefined) {
-            const { current_amount } = piggy_bank_state;
+        if (piggy_bank_state === undefined) {
+            // Piggy bank needs to be initialized
+            let init_currency;
+            locale=handlerInput.requestEnvelope.request.locale;
+            if (locale === undefined) {
+                locale = DEFAULT_LOCALE;
+            }
+            switch (locale) {
+                case 'es-MX': init_currency = "pesos";
+                break;
+                case 'es-US': init_currency = "dólares";
+                break;
+                default: init_currency = "euros"
+            }
             let now = new Date();
             const now_TS = now.getTime();
-            saved_currency = piggy_bank_state.currency;
-            if (saved_currency === undefined) {
-                // This handles the legacy case of database entries where currency was not properly initialized
-                locale=handlerInput.requestEnvelope.request.locale;
-                if (locale === undefined) {
-                    locale = DEFAULT_LOCALE;
-                }
-                switch (locale) {
-                    case 'es-MX': saved_currency = "pesos";
-                    break;
-                    case 'es-US': saved_currency = "dólares";
-                    break;
-                    default: saved_currency = "euros"
-                }
-                piggy_bank_state.currency = saved_currency;
+            attributes.piggy_bank_state = {
+                'current_amount': 0,
+                'timestamp': now_TS,
+                'currency': init_currency
             }
-            piggy_bank_state.current_amount = current_amount + AmountToAdd;
-            piggy_bank_state.timestamp = now_TS;
             handlerInput.attributesManager.setPersistentAttributes(attributes);
             await handlerInput.attributesManager.savePersistentAttributes();
-            speakOutput = `Añadiendo ${AmountToAdd} ${saved_currency}. La hucha contiene ahora ${piggy_bank_state.current_amount} ${saved_currency}. `;
-        } else {
-            speakOutput = `${NOT_INITIALIZED}`;
         }
+        
+        const { current_amount } = piggy_bank_state;
+        let now = new Date();
+        const now_TS = now.getTime();
+        saved_currency = piggy_bank_state.currency;
+        if (saved_currency === undefined) {
+            // This handles the legacy case of database entries where currency was not properly initialized
+            locale=handlerInput.requestEnvelope.request.locale;
+            if (locale === undefined) {
+                locale = DEFAULT_LOCALE;
+            }
+            switch (locale) {
+                case 'es-MX': saved_currency = "pesos";
+                break;
+                case 'es-US': saved_currency = "dólares";
+                break;
+                default: saved_currency = "euros"
+            }
+            piggy_bank_state.currency = saved_currency;
+        }
+        piggy_bank_state.current_amount = current_amount + AmountToAdd;
+        piggy_bank_state.timestamp = now_TS;
+        handlerInput.attributesManager.setPersistentAttributes(attributes);
+        await handlerInput.attributesManager.savePersistentAttributes();
+        speakOutput = `Añadiendo ${AmountToAdd} ${saved_currency}. La hucha contiene ahora ${piggy_bank_state.current_amount} ${saved_currency}. `;
 
         return handlerInput.responseBuilder
             .speak(speakOutput + CFA)
@@ -232,40 +275,60 @@ const RemoveMoneyIntentHandler = {
         var AmountToRemove = handlerInput.requestEnvelope.request.intent.slots.AmountOfMoney.value;
         AmountToRemove = Number(AmountToRemove);
         
-        if (piggy_bank_state !== undefined) {
-            const { current_amount } = piggy_bank_state;
+        if (piggy_bank_state === undefined) {
+            // Piggy bank needs to be initialized
+            let init_currency;
+            locale=handlerInput.requestEnvelope.request.locale;
+            if (locale === undefined) {
+                locale = DEFAULT_LOCALE;
+            }
+            switch (locale) {
+                case 'es-MX': init_currency = "pesos";
+                break;
+                case 'es-US': init_currency = "dólares";
+                break;
+                default: init_currency = "euros"
+            }
             let now = new Date();
             const now_TS = now.getTime();
-            saved_currency = piggy_bank_state.currency;
-            if (saved_currency === undefined) {
-                // This handles the legacy case of database entries where currency was not properly initialized
-                locale=handlerInput.requestEnvelope.request.locale;
-                if (locale === undefined) {
-                    locale = DEFAULT_LOCALE;
-                }
-                switch (locale) {
-                    case 'es-MX': saved_currency = "pesos";
-                    break;
-                    case 'es-US': saved_currency = "dólares";
-                    break;
-                    default: saved_currency = "euros"
-                }
-                piggy_bank_state.currency = saved_currency;
+            attributes.piggy_bank_state = {
+                'current_amount': 0,
+                'timestamp': now_TS,
+                'currency': init_currency
             }
-            piggy_bank_state.current_amount = current_amount - AmountToRemove;
-            speakOutput = `Sacando ${AmountToRemove} ${saved_currency}. `;
-            if (piggy_bank_state.current_amount < 0) {
-                piggy_bank_state.current_amount = 0;
-                speakOutput = speakOutput + 'Estás sacando más dinero del que hay. '
-            }
-            piggy_bank_state.timestamp = now_TS;
             handlerInput.attributesManager.setPersistentAttributes(attributes);
             await handlerInput.attributesManager.savePersistentAttributes();
-
-            speakOutput = speakOutput + `La hucha contiene ahora ${piggy_bank_state.current_amount} ${saved_currency}. `;
-        } else {
-            speakOutput = `${NOT_INITIALIZED}`;
         }
+        
+        const { current_amount } = piggy_bank_state;
+        let now = new Date();
+        const now_TS = now.getTime();
+        saved_currency = piggy_bank_state.currency;
+        if (saved_currency === undefined) {
+            // This handles the legacy case of database entries where currency was not properly initialized
+            locale=handlerInput.requestEnvelope.request.locale;
+            if (locale === undefined) {
+                locale = DEFAULT_LOCALE;
+            }
+            switch (locale) {
+                case 'es-MX': saved_currency = "pesos";
+                break;
+                case 'es-US': saved_currency = "dólares";
+                break;
+                default: saved_currency = "euros"
+            }
+            piggy_bank_state.currency = saved_currency;
+        }
+        piggy_bank_state.current_amount = current_amount - AmountToRemove;
+        speakOutput = `Sacando ${AmountToRemove} ${saved_currency}. `;
+        if (piggy_bank_state.current_amount < 0) {
+            piggy_bank_state.current_amount = 0;
+            speakOutput = speakOutput + 'Estás sacando más dinero del que hay. '
+        }
+        piggy_bank_state.timestamp = now_TS;
+        handlerInput.attributesManager.setPersistentAttributes(attributes);
+        await handlerInput.attributesManager.savePersistentAttributes();
+        speakOutput = speakOutput + `La hucha contiene ahora ${piggy_bank_state.current_amount} ${saved_currency}. `;
 
         return handlerInput.responseBuilder
             .speak(speakOutput + CFA)
@@ -287,34 +350,55 @@ const AdjustPiggyBankIntentHandler = {
         var NewAmount = handlerInput.requestEnvelope.request.intent.slots.AmountOfMoney.value;
         NewAmount = Number(NewAmount);
 
-        if (piggy_bank_state !== undefined) {
-            const { current_amount } = piggy_bank_state;
+        if (piggy_bank_state === undefined) {
+            // Piggy bank needs to be initialized
+            let init_currency;
+            locale=handlerInput.requestEnvelope.request.locale;
+            if (locale === undefined) {
+                locale = DEFAULT_LOCALE;
+            }
+            switch (locale) {
+                case 'es-MX': init_currency = "pesos";
+                break;
+                case 'es-US': init_currency = "dólares";
+                break;
+                default: init_currency = "euros"
+            }
             let now = new Date();
             const now_TS = now.getTime();
-            piggy_bank_state.current_amount = NewAmount;
-            piggy_bank_state.timestamp = now_TS;
-            saved_currency = piggy_bank_state.currency;
-            if (saved_currency === undefined) {
-                // This handles the legacy case of database entries where currency was not properly initialized
-                locale=handlerInput.requestEnvelope.request.locale;
-                if (locale === undefined) {
-                    locale = DEFAULT_LOCALE;
-                }
-                switch (locale) {
-                    case 'es-MX': saved_currency = "pesos";
-                    break;
-                    case 'es-US': saved_currency = "dólares";
-                    break;
-                    default: saved_currency = "euros"
-                }
-                piggy_bank_state.currency = saved_currency;
+            attributes.piggy_bank_state = {
+                'current_amount': 0,
+                'timestamp': now_TS,
+                'currency': init_currency
             }
             handlerInput.attributesManager.setPersistentAttributes(attributes);
             await handlerInput.attributesManager.savePersistentAttributes();
-            speakOutput = `La hucha contenía ${current_amount} ${saved_currency} y ahora contiene ${piggy_bank_state.current_amount} ${saved_currency}. `;
-        } else {
-            speakOutput = `${NOT_INITIALIZED}`;
         }
+
+        const { current_amount } = piggy_bank_state;
+        let now = new Date();
+        const now_TS = now.getTime();
+        piggy_bank_state.current_amount = NewAmount;
+        piggy_bank_state.timestamp = now_TS;
+        saved_currency = piggy_bank_state.currency;
+        if (saved_currency === undefined) {
+            // This handles the legacy case of database entries where currency was not properly initialized
+            locale=handlerInput.requestEnvelope.request.locale;
+            if (locale === undefined) {
+                locale = DEFAULT_LOCALE;
+            }
+            switch (locale) {
+                case 'es-MX': saved_currency = "pesos";
+                break;
+                case 'es-US': saved_currency = "dólares";
+                break;
+                default: saved_currency = "euros"
+            }
+            piggy_bank_state.currency = saved_currency;
+        }
+        handlerInput.attributesManager.setPersistentAttributes(attributes);
+        await handlerInput.attributesManager.savePersistentAttributes();
+        speakOutput = `La hucha contenía ${current_amount} ${saved_currency} y ahora contiene ${piggy_bank_state.current_amount} ${saved_currency}. `;
 
         return handlerInput.responseBuilder
             .speak(speakOutput + CFA)
