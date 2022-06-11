@@ -12,19 +12,6 @@ const DEFAULT_LOCALE = 'es-ES';
 var locale;
 var CURRENCY;
 
-const setCurrencyinDB = (locale) => {
-    let currency;
-    switch (locale) {
-        case 'es-MX': currency = "pesos";
-        break;
-        case 'es-US': currency = "dólares";
-        break;
-        default: currency = "euros"
-    }
-    const attributes = await handlerInput.attributesManager.getPersistentAttributes();
-        let { piggy_bank_state } = attributes;
-}
-
 const getLastTransactionDateAndTime = (timeStamp, userTZ) => {
     // Return day and hour corresponding to timeStamp in the user's timezone userTZ
     const oneDay = 24 * 60 * 60 * 1000;
