@@ -201,7 +201,7 @@ const AddMoneyIntentHandler = {
             && Alexa.getIntentName(handlerInput.requestEnvelope) === 'AddMoneyIntent';
     },
     async handle(handlerInput) {
-        const attributes = await handlerInput.attributesManager.getPersistentAttributes();
+        let attributes = await handlerInput.attributesManager.getPersistentAttributes();
         let { piggy_bank_state } = attributes;
         let speakOutput, textOutput, saved_currency;
         var AmountToAdd = handlerInput.requestEnvelope.request.intent.slots.AmountOfMoney.value;
@@ -230,6 +230,8 @@ const AddMoneyIntentHandler = {
             }
             handlerInput.attributesManager.setPersistentAttributes(attributes);
             await handlerInput.attributesManager.savePersistentAttributes();
+            attributes = await handlerInput.attributesManager.getPersistentAttributes();
+            piggy_bank_state = attributes;
         }
         
         const { current_amount } = piggy_bank_state;
