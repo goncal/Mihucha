@@ -63,6 +63,8 @@ const LaunchRequestHandler = {
             console.log('error', error.message);
         }
         sessionAttributes.userTZ = userTimeZone;
+        locale=handlerInput.requestEnvelope.request.locale;
+        if (locale === undefined) {locale = DEFAULT_LOCALE;}
 
         const attributes = await handlerInput.attributesManager.getPersistentAttributes();
         let { piggy_bank_state } = attributes;
@@ -70,10 +72,7 @@ const LaunchRequestHandler = {
         // Check if we need to initialize the piggy bank
         if (piggy_bank_state === undefined) {
             let init_currency;
-            locale=handlerInput.requestEnvelope.request.locale;
-            if (locale === undefined) {
-                locale = DEFAULT_LOCALE;
-            }
+            
             switch (locale) {
                 case 'es-MX': init_currency = "pesos";
                 break;
@@ -139,13 +138,13 @@ const StatusIntentHandler = {
         let userDate, userTime, userWeekDay;
         let speakOutput, textOutput, saved_currency;
 
+        locale=handlerInput.requestEnvelope.request.locale;
+        if (locale === undefined) {locale = DEFAULT_LOCALE;}
+        
         if (piggy_bank_state === undefined) {
             // Piggy bank needs to be initialized
             let init_currency;
-            locale=handlerInput.requestEnvelope.request.locale;
-            if (locale === undefined) {
-                locale = DEFAULT_LOCALE;
-            }
+            
             switch (locale) {
                 case 'es-MX': init_currency = "pesos";
                 break;
@@ -206,16 +205,15 @@ const AddMoneyIntentHandler = {
         const attributes = await handlerInput.attributesManager.getPersistentAttributes();
         let { piggy_bank_state } = attributes;
         let speakOutput, textOutput, saved_currency;
+        
+        locale=handlerInput.requestEnvelope.request.locale;
+        if (locale === undefined) {locale = DEFAULT_LOCALE;}
         var AmountToAdd = handlerInput.requestEnvelope.request.intent.slots.AmountOfMoney.value;
         AmountToAdd = Number(AmountToAdd);
 
         if (piggy_bank_state === undefined) {
             // Piggy bank needs to be initialized
             let init_currency;
-            locale=handlerInput.requestEnvelope.request.locale;
-            if (locale === undefined) {
-                locale = DEFAULT_LOCALE;
-            }
             switch (locale) {
                 case 'es-MX': init_currency = "pesos";
                 break;
@@ -280,16 +278,15 @@ const RemoveMoneyIntentHandler = {
         const attributes = await handlerInput.attributesManager.getPersistentAttributes();
         let { piggy_bank_state } = attributes;
         let speakOutput, textOutput, saved_currency;
+
+        locale=handlerInput.requestEnvelope.request.locale;
+        if (locale === undefined) {locale = DEFAULT_LOCALE;}
         var AmountToRemove = handlerInput.requestEnvelope.request.intent.slots.AmountOfMoney.value;
         AmountToRemove = Number(AmountToRemove);
         
         if (piggy_bank_state === undefined) {
             // Piggy bank needs to be initialized
             let init_currency;
-            locale=handlerInput.requestEnvelope.request.locale;
-            if (locale === undefined) {
-                locale = DEFAULT_LOCALE;
-            }
             switch (locale) {
                 case 'es-MX': init_currency = "pesos";
                 break;
@@ -359,16 +356,15 @@ const AdjustPiggyBankIntentHandler = {
         const attributes = await handlerInput.attributesManager.getPersistentAttributes();
         let { piggy_bank_state } = attributes;
         let speakOutput, textOutput, saved_currency;
+        
+        locale=handlerInput.requestEnvelope.request.locale;
+        if (locale === undefined) {locale = DEFAULT_LOCALE;}
         var NewAmount = handlerInput.requestEnvelope.request.intent.slots.AmountOfMoney.value;
         NewAmount = Number(NewAmount);
 
         if (piggy_bank_state === undefined) {
             // Piggy bank needs to be initialized
             let init_currency;
-            locale=handlerInput.requestEnvelope.request.locale;
-            if (locale === undefined) {
-                locale = DEFAULT_LOCALE;
-            }
             switch (locale) {
                 case 'es-MX': init_currency = "pesos";
                 break;
