@@ -4,10 +4,7 @@
   "description": "alexa skill to keep track of a piggy bank",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
-    "lint": "eslint *.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Gonçal Badenes",
   "license": "Apache License",
