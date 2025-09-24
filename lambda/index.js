@@ -97,7 +97,7 @@ const LaunchRequestHandler = {
             
             speakOutput = `¡Hola! Este skill, "${CARD_TITLE}", te ayuda a controlar y actualizar el contenido de tu hucha. `;
             speakOutput = speakOutput + 'Para empezar, asumo que la hucha contiene cero ' + piggy_bank_state.currency + '. ';
-            speakOutput = speakOutput + 'Puedes añadir, sacar, o ajustar el contenido de la hucha. También puedes pedir ayuda. ' + CFA + HELP_MESSAGE;
+            speakOutput = speakOutput + 'Puedes añadir, sacar, o ajustar el contenido de la hucha. También puedes pedir ayuda.' + CFA + HELP_MESSAGE;
             textOutput = `${CARD_TITLE} te ayuda a controlar el contenido de tu hucha.` + HELP_MESSAGE;
         } else {
             const { current_amount, timestamp, currency } = piggy_bank_state;
@@ -105,7 +105,7 @@ const LaunchRequestHandler = {
             [ userDate, userTime, userWeekDay ] = getLastTransactionDateAndTime(timestamp, sessionAttributes.userTZ, locale);
             const dateText = sayDate(userDate, userWeekDay);
             speakOutput = `La hucha contiene ${current_amount} ${currency} desde ${dateText} a las <say-as interpret-as="time">${userTime}</say-as>. ` + CFA;
-            textOutput = `La hucha contiene ${current_amount} ${currency} desde ${userDate} a las ${userTime}. ` + CFA + ' Puedes decir "estado", "añade", "saca", "ajusta" o "para".';
+            textOutput = `La hucha contiene ${current_amount} ${currency} desde ${userDate} a las ${userTime}. ` + CFA + ' Puedes decir "estado", "añade", "saca", "ajusta", "ayuda" o "para".';
         }
 
         return handlerInput.responseBuilder
