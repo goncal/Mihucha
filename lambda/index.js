@@ -7,7 +7,7 @@ const util = require('./util');
 //
 const CARD_TITLE = "Mi hucha";
 const CFA = '¿Qué quieres hacer? '
-const HELP_MESSAGE = 'Puedes decir "estado", "añade", "saca", "ajusta", o "para". ';
+const HELP_MESSAGE = 'Puedes decir "estado", "añade", "saca", "ajusta", "ayuda" o "para". ';
 const NOT_INITIALIZED = 'La hucha no está inicializada. Para iniciar la hucha puedes decir Alexa, abre mi hucha';
 const DEFAULT_LOCALE = 'es-ES';
 
@@ -105,7 +105,7 @@ const LaunchRequestHandler = {
             [ userDate, userTime, userWeekDay ] = getLastTransactionDateAndTime(timestamp, sessionAttributes.userTZ, locale);
             const dateText = sayDate(userDate, userWeekDay);
             speakOutput = `La hucha contiene ${current_amount} ${currency} desde ${dateText} a las <say-as interpret-as="time">${userTime}</say-as>. ` + CFA;
-            textOutput = `La hucha contiene ${current_amount} ${currency} desde ${userDate} a las ${userTime}. ` + CFA + ' Puedes decir "estado", "añade", "saca", "ajusta", "ayuda" o "para".';
+            textOutput = `La hucha contiene ${current_amount} ${currency} desde ${userDate} a las ${userTime}. ` + CFA + HELP_MESSAGE;
         }
 
         return handlerInput.responseBuilder
