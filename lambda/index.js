@@ -6,7 +6,7 @@ const ddbAdapter = require('ask-sdk-dynamodb-persistence-adapter');
 //
 const CARD_TITLE = "Mi hucha";
 const CFA = '¿Qué quieres hacer? '
-const HELP_MESSAGE = 'Puedes decir "estado", "añade", "saca", "ajusta", "ayuda" o "para". ';
+const HELP_MESSAGE = 'Puedes decir "estado", "añade", "saca", "ajusta", o "para". ';
 const NOT_INITIALIZED = 'La hucha no está inicializada. Para iniciar la hucha puedes decir Alexa, abre mi hucha';
 const DEFAULT_LOCALE = 'es-ES';
 var locale;
@@ -93,8 +93,6 @@ const LaunchRequestHandler = {
             speakOutput = `¡Hola! Este skill, "${CARD_TITLE}", te ayuda a controlar y actualizar el contenido de tu hucha. `;
             speakOutput = speakOutput + 'Para empezar, asumo que la hucha contiene cero ' + init_currency + '. ';
             speakOutput = speakOutput + 'Puedes añadir, sacar, o ajustar el contenido de la hucha. También puedes pedir ayuda. ' + CFA + HELP_MESSAGE;
-            speakOutput = speakOutput + 'Para empezar, asumo que la hucha contiene cero ' + piggy_bank_state.currency + '. ';
-            speakOutput = speakOutput + 'Puedes añadir, sacar, o ajustar el contenido de la hucha. También puedes pedir ayuda.' + CFA + HELP_MESSAGE;
             textOutput = `${CARD_TITLE} te ayuda a controlar el contenido de tu hucha.` + HELP_MESSAGE;
         } else {
             const { current_amount, timestamp } = piggy_bank_state;
@@ -428,7 +426,7 @@ const HelpIntentHandler = {
             && Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.HelpIntent';
     },
     handle(handlerInput) {
-        const speakOutput = '¿Cómo puedo ayudarte?' + HELP_MESSAGE;
+        const speakOutput = '¿Cómo puedo ayudarte? Para interactuar con tu hucha puedes decir estado, añade, saca o ajusta.';
 
         return handlerInput.responseBuilder
             .speak(speakOutput)
