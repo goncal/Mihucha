@@ -6,9 +6,10 @@
 ## Architecture & Key Components
 
 ### Core Structure
-- **`lambda/index.js`** - Main skill logic with intent handlers using ask-sdk-core v2.10.2
+- **`lambda/index.js`** - Main skill logic with intent handlers using ask-sdk-core v2.14.0
+- **`lambda/util.js`** - Input validation, currency utilities, and S3 presigned URL helpers
 - **`skill-package/`** - Alexa skill configuration and interaction models
-- **`skill-package/interactionModels/custom/`** - Voice interaction definitions per locale
+- **`skill-package/interactionModels/custom/`** - Voice interaction definitions per locale (es-ES.json, es-MX.json, es-US.json)
 
 ### Intent Handler Pattern
 All handlers follow this structure:
@@ -23,6 +24,7 @@ const [Intent]Handler = {
 - **Persistent state**: DynamoDB via `ask-sdk-dynamodb-persistence-adapter`
 - **Session state**: Device timezone stored in `sessionAttributes.userTZ`
 - **Data structure**: `piggy_bank_state = { current_amount, timestamp, currency }`
+- **Legacy migration**: Automatic currency field addition for backward compatibility
 
 ## Critical Development Patterns
 
@@ -81,11 +83,15 @@ Use `lambda/local-debugger.js` for local testing with ASK CLI.
 
 ### Deployment
 This is an **Alexa Hosted Skill** - deployment happens through Alexa Developer Console, not direct Lambda deployment.
+- **Skill ID**: `amzn1.ask.skill.21efbf49-9594-48f9-9e71-a50f446cf1b8`
+- **Multi-region**: EU (eu-west-1), NA (us-east-1), FE (us-west-2) Lambda endpoints
+- **ASK CLI**: Uses `@ask-cli/hosted-skill-deployer` for infrastructure management
 
 ### Dependencies
-- **AWS SDK v3**: Modern `@aws-sdk/client-*` packages for better performance
-- **ask-sdk-core v2.14+**: Latest Alexa SDK with enhanced features
-- **Jest + ESLint**: Comprehensive testing and linting setup
+- **AWS SDK v3**: `@aws-sdk/client-dynamodb`, `@aws-sdk/client-s3`, `@aws-sdk/s3-request-presigner` v3.600.0
+- **ask-sdk-core v2.14.0**: Latest Alexa SDK with enhanced features
+- **ask-sdk-dynamodb-persistence-adapter v2.14.0**: DynamoDB persistence layer
+- **Jest v29.7.0 + ESLint v8.50.0**: Comprehensive testing and linting setup
 
 ## Common Gotchas
 
@@ -94,6 +100,8 @@ This is an **Alexa Hosted Skill** - deployment happens through Alexa Developer C
 3. **Persistence**: Always call `savePersistentAttributes()` after state changes
 4. **Response format**: Include both `speak()` and `withSimpleCard()` for accessibility
 5. **Error boundary**: `IntentReflectorHandler` must be last in handler chain
+6. **Dialog management**: Uses `delegationStrategy: "ALWAYS"` with slot elicitation for amount prompts
+7. **Multi-locale assets**: Each locale (es-ES, es-MX, es-US) has separate icon files in `skill-package/assets/images/`
 
 ## Adding New Features
 

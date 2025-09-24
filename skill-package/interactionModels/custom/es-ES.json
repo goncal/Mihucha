@@ -1,7 +1,69 @@
 {
   "interactionModel": {
+    "dialog": {
+      "intents": [
+        {
+          "slots": [
+            {
+              "name": "AmountOfMoney",
+              "elicitationRequired": true,
+              "type": "AMAZON.NUMBER",
+              "confirmationRequired": false,
+              "prompts": {
+                "elicitation": "Elicit.Slot.AddAmountOfMoney"
+              }
+            }
+          ],
+          "name": "AddMoneyIntent",
+          "delegationStrategy": "ALWAYS",
+          "confirmationRequired": false,
+          "prompts": {}
+        },
+        {
+          "slots": [
+            {
+              "name": "AmountOfMoney",
+              "elicitationRequired": true,
+              "type": "AMAZON.NUMBER",
+              "confirmationRequired": false,
+              "prompts": {
+                "elicitation": "Elicit.Slot.RemoveAmountOfMoney"
+              }
+            }
+          ],
+          "name": "RemoveMoneyIntent",
+          "delegationStrategy": "ALWAYS",
+          "confirmationRequired": false,
+          "prompts": {}
+        },
+        {
+          "slots": [
+            {
+              "name": "AmountOfMoney",
+              "elicitationRequired": true,
+              "validations": [
+                {
+                  "type": "isGreaterThanOrEqualTo",
+                  "prompt": "Slot.Validation.AdjustPiggyBank",
+                  "value": "0"
+                }
+              ],
+              "type": "AMAZON.NUMBER",
+              "confirmationRequired": false,
+              "prompts": {
+                "elicitation": "Elicit.Slot.AdjustPiggyBank"
+              }
+            }
+          ],
+          "name": "AdjustPiggyBankIntent",
+          "delegationStrategy": "ALWAYS",
+          "confirmationRequired": false,
+          "prompts": {}
+        }
+      ],
+      "delegationStrategy": "ALWAYS"
+    },
     "languageModel": {
-      "invocationName": "mi hucha",
       "intents": [
         {
           "name": "AMAZON.CancelIntent",
@@ -16,8 +78,8 @@
           "samples": []
         },
         {
-          "name": "StatusIntent",
           "slots": [],
+          "name": "StatusIntent",
           "samples": [
             "estado",
             "status",
@@ -30,7 +92,6 @@
           ]
         },
         {
-          "name": "AddMoneyIntent",
           "slots": [
             {
               "name": "AmountOfMoney",
@@ -42,6 +103,7 @@
               ]
             }
           ],
+          "name": "AddMoneyIntent",
           "samples": [
             "Añade dinero a la hucha",
             "Pon dinero en la hucha",
@@ -66,7 +128,6 @@
           ]
         },
         {
-          "name": "RemoveMoneyIntent",
           "slots": [
             {
               "name": "AmountOfMoney",
@@ -78,6 +139,7 @@
               ]
             }
           ],
+          "name": "RemoveMoneyIntent",
           "samples": [
             "Quita dinero de la hucha",
             "Saca dinero de la hucha",
@@ -97,7 +159,6 @@
           ]
         },
         {
-          "name": "AdjustPiggyBankIntent",
           "slots": [
             {
               "name": "AmountOfMoney",
@@ -109,6 +170,7 @@
               ]
             }
           ],
+          "name": "AdjustPiggyBankIntent",
           "samples": [
             "Ajusta",
             "Ajusta la hucha",
@@ -123,109 +185,46 @@
           "samples": []
         }
       ],
-      "types": []
-    },
-    "dialog": {
-      "intents": [
-        {
-          "name": "AddMoneyIntent",
-          "confirmationRequired": false,
-          "prompts": {},
-          "slots": [
-            {
-              "name": "AmountOfMoney",
-              "type": "AMAZON.NUMBER",
-              "elicitationRequired": true,
-              "confirmationRequired": false,
-              "prompts": {
-                "elicitation": "Elicit.Slot.AddAmountOfMoney"
-              }
-            }
-          ],
-          "delegationStrategy": "ALWAYS"
-        },
-        {
-          "name": "RemoveMoneyIntent",
-          "confirmationRequired": false,
-          "prompts": {},
-          "slots": [
-            {
-              "name": "AmountOfMoney",
-              "type": "AMAZON.NUMBER",
-              "elicitationRequired": true,
-              "confirmationRequired": false,
-              "prompts": {
-                "elicitation": "Elicit.Slot.RemoveAmountOfMoney"
-              }
-            }
-          ],
-          "delegationStrategy": "ALWAYS"
-        },
-        {
-          "name": "AdjustPiggyBankIntent",
-          "confirmationRequired": false,
-          "prompts": {},
-          "slots": [
-            {
-              "name": "AmountOfMoney",
-              "type": "AMAZON.NUMBER",
-              "elicitationRequired": true,
-              "confirmationRequired": false,
-              "prompts": {
-                "elicitation": "Elicit.Slot.AdjustPiggyBank"
-              },
-              "validations": [
-                {
-                  "type": "isGreaterThanOrEqualTo",
-                  "prompt": "Slot.Validation.AdjustPiggyBank",
-                  "value": "0"
-                }
-              ]
-            }
-          ],
-          "delegationStrategy": "ALWAYS"
-        }
-      ],
-      "delegationStrategy": "ALWAYS"
+      "types": [],
+      "invocationName": "mi hucha"
     },
     "prompts": [
       {
-        "id": "Elicit.Slot.AddAmountOfMoney",
         "variations": [
           {
             "type": "PlainText",
             "value": "¿Cuántos euros quieres añadir?"
           }
-        ]
+        ],
+        "id": "Elicit.Slot.AddAmountOfMoney"
       },
       {
-        "id": "Elicit.Slot.RemoveAmountOfMoney",
         "variations": [
           {
             "type": "PlainText",
             "value": "¿Cuántos euros quieres sacar?"
           }
-        ]
+        ],
+        "id": "Elicit.Slot.RemoveAmountOfMoney"
       },
       {
-        "id": "Elicit.Slot.AdjustPiggyBank",
         "variations": [
           {
             "type": "PlainText",
             "value": "¿Cuántos euros hay en la hucha?"
           }
-        ]
+        ],
+        "id": "Elicit.Slot.AdjustPiggyBank"
       },
       {
-        "id": "Slot.Validation.AdjustPiggyBank",
         "variations": [
           {
             "type": "PlainText",
             "value": "La hucha no puede contener valores negativos"
           }
-        ]
+        ],
+        "id": "Slot.Validation.AdjustPiggyBank"
       }
     ]
-  },
-  "version": "50"
+  }
 }
