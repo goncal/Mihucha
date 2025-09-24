@@ -273,7 +273,7 @@ const HelpIntentHandler = {
             && Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.HelpIntent';
     },
     handle(handlerInput) {
-        const speakOutput = '¿Cómo puedo ayudarte? Para interactuar con tu hucha puedes decir estado, añade, saca o ajusta.';
+        const speakOutput = '¿Cómo puedo ayudarte?' + HELP_MESSAGE;
 
         return handlerInput.responseBuilder
             .speak(speakOutput)
