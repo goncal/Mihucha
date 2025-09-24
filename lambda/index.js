@@ -11,7 +11,7 @@ const HELP_MESSAGE = 'Puedes decir "estado", "añade", "saca", "ajusta", o "para
 const NOT_INITIALIZED = 'La hucha no está inicializada. Para iniciar la hucha puedes decir Alexa, abre mi hucha';
 const DEFAULT_LOCALE = 'es-ES';
 
-const getLastTransactionDateAndTime = (timeStamp, userTZ) => {
+const getLastTransactionDateAndTime = (timeStamp, userTZ, locale) => {
     // Return day and hour corresponding to timeStamp in the user's timezone userTZ
     const oneDay = 24 * 60 * 60 * 1000;
     const now = new Date();
@@ -102,7 +102,7 @@ const LaunchRequestHandler = {
         } else {
             const { current_amount, timestamp, currency } = piggy_bank_state;
             let userDate, userTime, userWeekDay;
-            [ userDate, userTime, userWeekDay ] = getLastTransactionDateAndTime(timestamp, sessionAttributes.userTZ);
+            [ userDate, userTime, userWeekDay ] = getLastTransactionDateAndTime(timestamp, sessionAttributes.userTZ, locale);
             const dateText = sayDate(userDate, userWeekDay);
             speakOutput = `La hucha contiene ${current_amount} ${currency} desde ${dateText} a las <say-as interpret-as="time">${userTime}</say-as>. ` + CFA;
             textOutput = `La hucha contiene ${current_amount} ${currency} desde ${userDate} a las ${userTime}. ` + CFA + ' Puedes decir "estado", "añade", "saca", "ajusta" o "para".';
@@ -123,11 +123,11 @@ const StatusIntentHandler = {
     },
     async handle(handlerInput) {
         const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
-        const { piggy_bank_state } = await getOrInitializePiggyBank(handlerInput);
+        const { piggy_bank_state, locale } = await getOrInitializePiggyBank(handlerInput);
         
         const { current_amount, timestamp, currency } = piggy_bank_state;
         let userDate, userTime, userWeekDay;
-        [ userDate, userTime, userWeekDay ] = getLastTransactionDateAndTime(timestamp, sessionAttributes.userTZ);
+        [ userDate, userTime, userWeekDay ] = getLastTransactionDateAndTime(timestamp, sessionAttributes.userTZ, locale);
         const dateText = sayDate(userDate, userWeekDay);
         
         const speakOutput = `La hucha contiene ${current_amount} ${currency} desde ${dateText} a las <say-as interpret-as="time">${userTime}</say-as>. `;
